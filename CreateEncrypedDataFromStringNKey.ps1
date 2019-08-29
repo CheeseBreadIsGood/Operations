@@ -1,9 +1,9 @@
- <#
+ <#--------------------CreateEncrypedDataFromStringNKey.ps1
   .SYNOPSIS
-    Used to create an encrypted file of an arbitrary string
+    Used to create an encrypted file of an arbitrary string and a password
 
   .DESCRIPTION
-    This function is used to create an encrytpion \ decryption key that will be used in conjunction with PowerShell cmdlets and functions to encrypt and decrypt data.
+    This function is used to create an encrytped string  \ decryption key that will be used in conjunction with PowerShell cmdlets and functions to encrypt and decrypt data.
     The key needs to be between 16 and 32 characters in length.
 
   .PARAMETER Key
