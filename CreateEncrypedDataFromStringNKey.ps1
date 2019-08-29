@@ -32,11 +32,10 @@
   while ($key.Length -lt $AESkeySize ) { # Keep doubleing the size of the key until it is greater then $aeskeysize
   $key = $key + $key
   }
-  if ($key.Length -gt $AESkeySize ) { #cut the larger then needed key down to the AESkeySize
+  if ($key.Length -gt $AESkeySize ) { #cut the needed key down to the AESkeySize
   $Key = $Key[0..($AESkeySize -1)] #$key is now the right size to use
   }  
    #endregion
-
   
   $Encrypted = ConvertFrom-SecureString $EncryptThisNow -Key $Key #This is where the magic happens. AES encryptiton using the $Key from the user
   Out-File -InputObject $Encrypted -FilePath "C:\temp\EncryptedStringAES.txt"
