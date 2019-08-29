@@ -3,31 +3,24 @@
     Used to create an encrypted file of an arbitrary string and a password
 
   .DESCRIPTION
-    This function is used to create an encrytped string  \ decryption key that will be used in conjunction with PowerShell cmdlets and functions to encrypt and decrypt data.
-    The key needs to be between 16 and 32 characters in length.
+    This function is used to create an encrytped string $EncryptThisNow using a secret password $SeedPassword. It will be then saved to a file
 
   .PARAMETER Key
-    Mandatory. The key as a string that the user wants to use to encrypt \ decrypt data
-
+    Mandatory. The $SeedPassword will be taken and turned into bytes for use as a $key to encrypt your $EncryptThisNow string. 
   .INPUTS
-    None - other than parameter above
+    $SeedPassword - A typed password. $EncryptThisNow - is the string that you want to encrypt using $SeedPassword you inputed
 
   .OUTPUTS
-    Valid Byte Key to be used to encrypt \ decrypt data
+    $Encrypted - Your fully encrypted string that was encrypted with your $SeedPassword key.
 
   .NOTES
     Version:        1.0
-    Author:         Luca Sturlese
-    Creation Date:  14/02/13
+    Author:         Mike Ryan   
+    Creation Date:  09/29/19
     Purpose/Change: Initial function development
 
-    Version:        1.1
-    Author:         Luca Sturlese
-    Creation Date:  13/03/13
-    Purpose/Change: Added sleep of few seconds between major commands to improve script success
-    
   .EXAMPLE
-    $EncryptKey = Set-EncryptKey -Key "PNBX2JIRV7VARUFVZ48O7GTW3HVZ48J5"
+    $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
   #>
 
   $SeedPassword = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
