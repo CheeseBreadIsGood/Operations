@@ -32,7 +32,6 @@
   while ($key.Length -lt $AESkeySize ) { # Keep doubleing the size of the key until it is greater then $aeskeysize
   $key = $key + $key
   }
-  
   if ($key.Length -gt $AESkeySize ) { #cut the larger then needed key down to the AESkeySize
   $Key = $Key[0..($AESkeySize -1)]
   }  #$key is now the right size to use
