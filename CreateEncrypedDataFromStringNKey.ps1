@@ -39,3 +39,7 @@
   
   $Encrypted = ConvertFrom-SecureString $EncryptThisNow -Key $Key #This is where the magic happens. AES encryptiton using the $Key from the user
   Out-File -InputObject $Encrypted -FilePath "C:\temp\EncryptedStringAES.txt"
+  #-----Just for testing-----
+ # [System.Net.NetworkCredential]::new("", $GetPassword).Password  #This decrypts a secure string
+# [System.Net.NetworkCredential]::new("", $Securepassword).Password #This decrypts a secure string
+# [System.Net.NetworkCredential]::new("", $Encrypted).Password #This decrypts a secure string
