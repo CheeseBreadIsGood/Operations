@@ -52,5 +52,5 @@ $Securepassword = ConvertTo-SecureString $CredentialItems.EncryptedPass -Key $ke
 $credentials = New-Object System.Management.Automation.PSCredential($CredentialItems.SPName,$SecurePassword) #build cretentials for loggin into Azure
 Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $CredentialItems.TenetID ## log into Azure
 #Now test and get some secrets, oh cool
-(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "AdministratorName").SecretValueText
-(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "CloudNASKey1").SecretValueText
+#(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "AdministratorSecretName").SecretValueText
+#(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "CloudKey1").SecretValueText
