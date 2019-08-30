@@ -1,4 +1,4 @@
- <#--------------------CreateEncrypedDataFromStringNKey.ps1
+  <#--------------------CreateEncrypedDataFromStringNKey.ps1
   .SYNOPSIS
     Used to create an encrypted file of an arbitrary string and a password
 
@@ -22,7 +22,6 @@
   .EXAMPLE
     $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
   #>
-
   $SeedPassword = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
   $EncryptThisNow = read-host "Paste Your Secret Here:" -AsSecureString ##Paste in your text secret so as to not keep it inside the code
   
@@ -35,11 +34,11 @@
   if ($key.Length -gt $AESkeySize ) { #cut the needed key down to the AESkeySize
   $Key = $Key[0..($AESkeySize -1)] #$key is now the right size to use
   }  
-   #endregion
+  #endregion
   
   $Encrypted = ConvertFrom-SecureString $EncryptThisNow -Key $Key #This is where the magic happens. AES encryptiton using the $Key from the user
   Out-File -InputObject $Encrypted -FilePath "C:\temp\EncryptedStringAES.txt"
   #-----Just for testing-----
- # [System.Net.NetworkCredential]::new("", $GetPassword).Password  #This decrypts a secure string
+# [System.Net.NetworkCredential]::new("", $GetPassword).Password  #This decrypts a secure string
 # [System.Net.NetworkCredential]::new("", $Securepassword).Password #This decrypts a secure string
 # [System.Net.NetworkCredential]::new("", $Encrypted).Password #This decrypts a secure string
