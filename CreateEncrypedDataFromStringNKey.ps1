@@ -22,6 +22,8 @@
   .EXAMPLE
     $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
   #>
+  New-Item -ItemType Directory -Force -Path C:\NoobehIT\ServerSetup\Temp
+  $File = "C:\NoobehIT\ServerSetup\Temp\EncryptedStringAES.txt"
   $SeedPassword = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
   $EncryptThisNow = read-host "Paste Your Secret Here:" -AsSecureString ##Paste in your text secret so as to not keep it inside the code
   
@@ -37,7 +39,7 @@
   #endregion
   
   $Encrypted = ConvertFrom-SecureString $EncryptThisNow -Key $Key #This is where the magic happens. AES encryptiton using the $Key from the user
-  Out-File -InputObject $Encrypted -FilePath "C:\temp\EncryptedStringAES.txt"
+  Out-File -InputObject $Encrypted -FilePath $File # store the encrypted password on a text file
   #-----Just for testing-----
 # [System.Net.NetworkCredential]::new("", $GetPassword).Password  #This decrypts a secure string
 # [System.Net.NetworkCredential]::new("", $Securepassword).Password #This decrypts a secure string
