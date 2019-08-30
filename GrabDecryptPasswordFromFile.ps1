@@ -28,7 +28,9 @@
     Purpose/Change: Initial function development
 
   .EXAMPLE
-    $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
+    $SeedPassword = "justApassword"; $EncryptThisNow = "This is the string that I want to encrypt witht he $SeedPassword"
+    SPname,TenetID,EncryptedPass
+    asdfa-erljk-dfgs-sdfgf,;lwkejr-fgs-sdfgs-sdfg,fjakhapoeifmnvmandflafhpaoweifldfkja;dfklj
   #>
 
 $File = "C:\Temp\EncryptedCredentials.txt"
