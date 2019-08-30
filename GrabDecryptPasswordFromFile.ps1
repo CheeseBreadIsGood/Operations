@@ -18,7 +18,7 @@
     $SeedPassword - A typed password. $EncryptThisNow - is the string that you want to encrypt using $SeedPassword you inputed
 
   .OUTPUTS
-    $Encrypted - Your fully encrypted string that was encrypted with your $SeedPassword key.
+    Logging into Azure to access Azure keyvault
 
 
   .NOTES
