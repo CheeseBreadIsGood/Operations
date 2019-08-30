@@ -22,8 +22,8 @@
   .EXAMPLE
     $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
   #>
-  New-Item -ItemType Directory -Force -Path C:\NoobehIT\ServerSetup\Temp
-  $File = "C:\NoobehIT\ServerSetup\Temp\EncryptedStringAES.txt"
+  New-Item -ItemType Directory -Force -Path C:\Users\ServerAdmin\Desktop
+  $File = "C:\Users\ServerAdmin\Desktop\EncryptedStringAES.txt"
   $SeedPassword = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
   $EncryptThisNow = read-host "Paste Your Secret Here:" -AsSecureString ##Paste in your text secret so as to not keep it inside the code
   
