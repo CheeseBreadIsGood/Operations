@@ -32,8 +32,8 @@
     SPname,TenetID,EncryptedPass
     asdfa-erljk-dfgs-sdfgf,;lwkejr-fgs-sdfgs-sdfg,fjakhapoeifmnvmandflafhpaoweifldfkja;dfklj
   #>
-
-$File = "C:\Temp\EncryptedCredentials.txt"
+  New-Item -ItemType Directory -Force -Path C:\NoobehIT\ServerSetup\Temp
+$File = "C:\NoobehIT\ServerSetup\Temp\EncryptedCredentials.txt"
 $SeedPassword = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
 $key =  [Text.Encoding]::UTF8.GetBytes($SeedPassword) #Set the $SeedPassword into array of bytes
   $AESkeySize = 32 # How many bytes do you want? You can use 16, 24, or 32 bytes for AES,which is 128,192,or 256 bits respectivly . Needs to match the same as it was encrypted
