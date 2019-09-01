@@ -32,8 +32,8 @@
     SPname,TenetID,EncryptedPass
     asdfa-erljk-dfgs-sdfgf,;lwkejr-fgs-sdfgs-sdfg,fjakhapoeifmnvmandflafhpaoweifldfkja;dfklj
   #>
-  New-Item -ItemType Directory -Force -Path C:\Users\ServerAdmin\Desktop
-$File = "C:\Users\ServerAdmin\Desktop\EncryptedCredentials.txt"
+  New-Item -ItemType Directory -Force -Path C:\NoobehIT\ServerSetup\Temp
+$File = "C:\NoobehIT\ServerSetup\Temp\EncryptedCredentials.txt"
 $SeedPassword = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
 $key =  [Text.Encoding]::UTF8.GetBytes($SeedPassword) #Set the $SeedPassword into array of bytes
   $AESkeySize = 32 # How many bytes do you want? You can use 16, 24, or 32 bytes for AES,which is 128,192,or 256 bits respectivly . Needs to match the same as it was encrypted
@@ -52,5 +52,10 @@ $Securepassword = ConvertTo-SecureString $CredentialItems.EncryptedPass -Key $ke
 $credentials = New-Object System.Management.Automation.PSCredential($CredentialItems.SPName,$SecurePassword) #build cretentials for loggin into Azure
 Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $CredentialItems.TenetID ## log into Azure
 #Now test and get some secrets, oh cool
-#(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "AdministratorSecretName").SecretValueText
+#  #-----Just for testing-----
+ [System.Net.NetworkCredential]::new("", $CredentialItems.SPName).Password  #This decrypts a secure string
+ [System.Net.NetworkCredential]::new("", $CredentialItems.TenetID).Password #This decrypts a secure string
+[System.Net.NetworkCredential]::new("", $SecurePassword).Password #This decrypts a secure string
+
+#(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "AdministratorSEECRETName").SecretValueText
 #(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "CloudKey1").SecretValueText
