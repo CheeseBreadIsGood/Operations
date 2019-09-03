@@ -22,9 +22,7 @@
   .EXAMPLE
     $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
   #>
-  #$Path = New-Item -ItemType Directory -Force -Path C:\
   $File = ".\EncryptedCredentials.txt"
-  #$File = Join-Path  $Path $File #concatenate to make the full file path
   
   $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
   $SecurePass = ConvertTo-SecureString -String (read-host "Paste Your IAMpassword Here:") -AsPlainText -Force ##Paste in your text secret so as to not keep it inside the code
