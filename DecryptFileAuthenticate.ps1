@@ -1,6 +1,6 @@
   <#--------------------------------------------------------------------
   .SYNOPSIS
-    Used to create an encrypted file of an arbitrary string Encrypted from a sting password
+    Used to create an encrypted file of an arbitrary string Encrypted from a string key password (should be complex)
 
   .DESCRIPTION
     This function is used to create an encrytped string $EncryptThisNow using a secret password $SeedPassword. It will be then saved to a file
