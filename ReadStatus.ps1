@@ -1,4 +1,4 @@
-$path = ".\Status.log"
+$path = ".\Status\SetupStatus.log"
 
 
 $pattern1 = "###Phase1 Complete###"
