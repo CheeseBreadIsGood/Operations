@@ -25,7 +25,7 @@
   .EXAMPLE
     $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
   #>
-  $File = ".\EncryptedCredentials.txt"
+  $File = ".\EncryptedCredentials.csv"
   
   $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code
   $SecurePass = ConvertTo-SecureString -String (read-host "Paste Your IAMpassword Here:") -AsPlainText -Force ##Paste in your text secret so as to not keep it inside the code

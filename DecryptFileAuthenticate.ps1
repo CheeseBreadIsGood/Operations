@@ -27,7 +27,7 @@
   .EXAMPLE
     $SeedPassword = "justApassword987&&"; 
   #>
-  $File = ".\EncryptedCredentials.txt" #The file is stored at same location and will be on Github repository
+  $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
   
   $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code. Needs to be the same password for when these strings where encrpted with.
 
