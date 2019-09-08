@@ -1,6 +1,6 @@
 ##Install certificate
 ## The location of the Cert.pfx file
-$CertPath = "C:\NoobehIT\ServerSetup\Certificates\CurrentCertNoobeh\NoobehWildCert.pfx"
+$CertPath = "C:\NoobehIT\ServerSetup\Certificates\CurrentCertNoobeh\Certificate.pfx"
 
 
 $CertPwd = Read-Host -Prompt 'Certificate Password =-->'  -AsSecureString #Get the Cert private key password
@@ -27,13 +27,11 @@ Set-RDCertificate @Splatting -Role RDWebAccess -Force
 Set-RDCertificate @Splatting -Role RDPublishing -Force	
 Set-RDCertificate @Splatting -Role RDRedirector -Force	
 
-
-# get the web binding of the site
-$binding = Get-WebBinding -Name 'Default Web Site' -Protocol "https"
-
-# set the ssl certificate
+# get the web binding of the site & set the ssl certificate
 (Get-WebBinding -Name 'Default Web Site' -Port 443 -Protocol "https").AddSslCertificate($CertThumb, "my")
 #check for expiring certificates.
  Get-ChildItem -Path Cert:\localmachine\my -Recurse -ExpiringInDays 75
 
+ #if using rd web service
+ Import-RDWebClientBrokerCert \\noobehnas.file.core.windows.net\cloudnas\CertificateInfo\CurrentCertNoobeh\certificate.crt
 

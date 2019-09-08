@@ -28,8 +28,12 @@
     $SeedPassword = "justApassword987&&"; 
   #>
   $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
-  
-  $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##This will be a typed in secret so as to not keep it inside the code. Needs to be the same password for when these strings where encrpted with.
+  $LoginLog = '.\Status\LoginLog.log' #The seedPasswordKet is on a local file. Not on github
+  if (Test-Path $LoginLog){
+    $SeedPasswordKey = Get-Content -Path $LoginLog -Delimiter " "
+  } else {
+    $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##Thie file is missing so get it interactively from user. This will be a typed in secret so as to not keep it inside the code. Needs to be the same password for when these strings where encrpted with.
+  }
 
   $key =  [Text.Encoding]::UTF8.GetBytes($SeedPasswordKey) #Set the $SeedPassword into array of bytes
   $AESkeySize = 32 # How many bytes do you want? You can use 16, 24, or 32 bytes for AES,which is 128,192,or 256 bits respectivly 
