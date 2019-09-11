@@ -30,7 +30,9 @@
   $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
   $LoginLog = '.\Status\LoginLog.log' #The seedPasswordKet is on a local file. Not on github
   if (Test-Path $LoginLog){
-    $SeedPasswordKey = Get-Content -Path $LoginLog -Delimiter " "
+    $SeedPasswordKey = Get-Content -Path $LoginLog -Delimiter " " #get the last line in the long file. Should be a slingle word
+    $SeedPasswordKey = $SeedPasswordKey[-1].trim() #get rid of all the line arrays except for the last one and clean it up by Trimming out the leading and training white spaces.
+    $SeedPasswordKey = ConvertTo-SecureString $SeedPasswordKey -AsPlainText -Force #change it into a secure string. Needed for the next step
   } else {
     $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##Thie file is missing so get it interactively from user. This will be a typed in secret so as to not keep it inside the code. Needs to be the same password for when these strings where encrpted with.
   }
