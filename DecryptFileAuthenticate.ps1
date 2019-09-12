@@ -1,7 +1,7 @@
   <#--------------------------------------------------------------------
   .SYNOPSIS
     Used to decrypt stings in an encrypted CSV file of Three strings using a typed in SeedPassword (should be complex)
-    Then use them to authenticate to Azure as a Service Principle. 
+    Then use them to authenticate to Azure as a Service Principle. First it sees if there is a 
 
   .DESCRIPTION
     Used to read a csv file of Three encrypted string. Then decrypted them using a String key password (Should be complex). 
@@ -30,6 +30,7 @@
  
 
   $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
+  $LocalCredentialStoreName = "AzureServicePrincipal"   #just the name to use as the title in the Windows local credential store
   $LoginLog = '.\Status\LoginLog.log' #The seedPasswordKet is on a local file. Not on github
   if (Test-Path $LoginLog){
     $SeedPasswordKey = Get-Content -Path $LoginLog -Delimiter " " #get the last line in the long file. Should be a slingle word
@@ -58,8 +59,15 @@
   $CredentialItems.TenantID = [System.Net.NetworkCredential]::new("", $CredentialItems.TenantID).Password #back to a normal string (not securestring)
 
 $credentials = New-Object System.Management.Automation.PSCredential($CredentialItems.SPname,$EncryptedPass) #build cretentials for loggin into Azure
-Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $CredentialItems.TenantID ## log into Azure
-#Now test and get some secrets, oh cool
+Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $CredentialItems.TenantID ## log into Azure as service principle 
+
+#now put these credentials into the local windows credential store for later script usage
+
+if ( -not [StoredCredential]::Exists( $LocalCredentialStoreName ) ){ # If not already there, 
+  [StoredCredential]::Store( $LocalCredentialstoreName, $credentials ) #Create stored credentials in the Windows credential store for later automated scripts to use
+} 
+
+<#   #Now test and get some secrets, oh cool
 
   #-----Just for testing-----
 #[System.Net.NetworkCredential]::new("", $EncryptedPass).Password  #This decrypts a secure string
@@ -67,10 +75,8 @@ Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $Credential
 #[System.Net.NetworkCredential]::new("", $TenantID).Password #This decrypts a secure string
 #(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "CloudKey1").SecretValueText
 
-
-
-# simple password vault access class  
-class StoredCredential{ 
+#>
+class StoredCredential{ # simple password vault access class 
   [System.Management.Automation.PSCredential] $PSCredential 
   [string] $account; 
   [string] $password; 
@@ -114,6 +120,22 @@ class StoredCredential{
   static [StoredCredential] Store( [string] $name, [PSCredential] $pscred ){ 
       return [StoredCredential]::Store( $name, $pscred.UserName, ($pscred.GetNetworkCredential()).Password ) 
   } 
+
+<# https://gallery.technet.microsoft.com/scriptcenter/Accessing-Windows-7210ae91
+Usage example:
+ 
+$CredentialName = "MyCredential" 
+ 
+if ( [StoredCredential]::Exists( $CredentialName ) ){ 
+  $credential = [StoredCredential]::New( $CredentialName ) 
+} 
+else{ 
+   $credential = [StoredCredential]::Store( $CredentialName, ( Get-Credential ) ) 
+} 
+ 
+New-PSSession -ComputerName "AppServer" -Credential $credential.PSCredential
+
+#>
 
 }  #class StoredCredential 
 
