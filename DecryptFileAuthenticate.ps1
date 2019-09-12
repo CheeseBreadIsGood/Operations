@@ -27,6 +27,8 @@
   .EXAMPLE
     $SeedPassword = "justApassword987&&"; 
   #>
+ 
+
   $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
   $LoginLog = '.\Status\LoginLog.log' #The seedPasswordKet is on a local file. Not on github
   if (Test-Path $LoginLog){
@@ -64,3 +66,54 @@ Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $Credential
 #[System.Net.NetworkCredential]::new("", $SPname).Password #This decrypts a secure string
 #[System.Net.NetworkCredential]::new("", $TenantID).Password #This decrypts a secure string
 #(Get-AzKeyVaultSecret -vaultName "guessTheNumber" -name "CloudKey1").SecretValueText
+
+
+
+# simple password vault access class  
+class StoredCredential{ 
+  [System.Management.Automation.PSCredential] $PSCredential 
+  [string] $account; 
+  [string] $password; 
+
+  # loads credential from vault 
+  StoredCredential( [string] $name ){ 
+      [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]  
+      $vault = New-Object Windows.Security.Credentials.PasswordVault  
+      $cred = $vault.FindAllByResource($name) | select -First 1 
+      $cred.retrievePassword() 
+      $this.account = $cred.userName 
+      $this.password = $cred.password  
+      $pwd_ss = ConvertTo-SecureString $cred.password -AsPlainText -Force 
+      $this.PSCredential = New-Object System.Management.Automation.PSCredential ($this.account, $pwd_ss ) 
+  } 
+
+  static [bool] Exists( [string] $name ){ 
+      [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]  
+      $vault = New-Object Windows.Security.Credentials.PasswordVault  
+      try{ 
+          $vault.FindAllByResource($name)  
+      } 
+      catch{ 
+          if ( $_.Exception.message -match "element not found" ){ 
+              return $false 
+          } 
+          throw $_.exception 
+      } 
+      return $true 
+  } 
+
+
+  static [StoredCredential] Store( [string] $name, [string] $login, [string] $pwd ){ 
+      [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime] 
+      $vault=New-Object Windows.Security.Credentials.PasswordVault 
+      $cred=New-Object Windows.Security.Credentials.PasswordCredential($name, $login, $pwd) 
+      $vault.Add($cred) 
+      return [StoredCredential]::new($name) 
+  } 
+   
+  static [StoredCredential] Store( [string] $name, [PSCredential] $pscred ){ 
+      return [StoredCredential]::Store( $name, $pscred.UserName, ($pscred.GetNetworkCredential()).Password ) 
+  } 
+
+}  #class StoredCredential 
+
