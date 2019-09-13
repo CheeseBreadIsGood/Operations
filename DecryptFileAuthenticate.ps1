@@ -31,12 +31,16 @@
 
   $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
   $LocalCredentialStoreName = "AzureServicePrincipal"   #just the name to use as the title in the Windows local credential store
-  $LoginLog = '.\Status\LoginLog.log' #The seedPasswordKet is on a local file. Not on github
-  if (Test-Path $LoginLog){
-    $SeedPasswordKey = Get-Content -Path $LoginLog -Delimiter " " #get the last line in the long file. Should be a slingle word
+  $LocalLoginLog = '.\Status\LoginLog.log' #The seedPasswordKet is on a local file. !!Not on github!!
+
+  if ( [StoredCredential]::Exists( $LocalCredentialStoreName ) ){ #First see if there is a local store of Azure Service Principal in local computer
+    $credentials = [StoredCredential]::New( $CredentialName ) 
+    $SeedPasswordKey = $credentials.Password
+  } elseif (Test-Path $LocalLoginLog){  #Second see if there is a local file that has the password in clear text at the bottom of random text file.
+    $SeedPasswordKey = Get-Content -Path $LocalLoginLog -Delimiter " " #get the last line in the long file. Should be a slingle word
     $SeedPasswordKey = $SeedPasswordKey[-1].trim() #get rid of all the line arrays except for the last one and clean it up by Trimming out the leading and training white spaces.
     $SeedPasswordKey = ConvertTo-SecureString $SeedPasswordKey -AsPlainText -Force #change it into a secure string. Needed for the next step
-  } else {
+  } else { #Lastly if the first two checks on the configurations for password fail, Just ask the user straight-up
     $SeedPasswordKey = read-host "Seed Key Password" -AsSecureString ##Thie file is missing so get it interactively from user. This will be a typed in secret so as to not keep it inside the code. Needs to be the same password for when these strings where encrpted with.
   }
 
@@ -64,7 +68,8 @@ Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $Credential
 #now put these credentials into the local windows credential store for later script usage
 
 if ( -not [StoredCredential]::Exists( $LocalCredentialStoreName ) ){ # If not already there, 
-  [StoredCredential]::Store( $LocalCredentialstoreName, $credentials ) #Create stored credentials in the Windows credential store for later automated scripts to use
+  $tempCredentials = New-Object System.Management.Automation.PSCredential( $LocalCredentialStoreName,$SeedPasswordKey) #make just to store the $SeedPasswordKey in.
+  [StoredCredential]::Store( $LocalCredentialstoreName, $tempCredentials) #Create stored credentials in the Windows credential store for later automated scripts to use $SeedPasswordKey
 } 
 
 <#   #Now test and get some secrets, oh cool
@@ -85,7 +90,7 @@ class StoredCredential{ # simple password vault access class
   StoredCredential( [string] $name ){ 
       [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]  
       $vault = New-Object Windows.Security.Credentials.PasswordVault  
-      $cred = $vault.FindAllByResource($name) | select -First 1 
+      $cred = $vault.FindAllByResource($name) | Select-Object -First 1 
       $cred.retrievePassword() 
       $this.account = $cred.userName 
       $this.password = $cred.password  
