@@ -27,7 +27,11 @@
   .EXAMPLE
     $SeedPassword = "justApassword987&&"; 
   #>
- 
+ function FunctionName {
+   param ( [string]$SeedPasswordKey
+   )
+   
+ }
 
   $File = ".\EncryptedCredentials.csv" #The file is stored at same location and will be on Github repository
   $LocalCredentialStoreName = "AzureServicePrincipal"   #just the name to use as the title in the Windows local credential store
