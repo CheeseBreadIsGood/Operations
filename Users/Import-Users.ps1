@@ -1,6 +1,8 @@
 $UserList = Import-Csv -Path C:\names\usernames.csv 
 
 foreach ($User in $UserList) {
+   $User.FirstName = $User.FirstName.trim()  ##Clear leading and trailing spaces
+   $User.LastName  = $User.LastName.trim()  ##Clear leading and trailing spaces
 
      $Attributes = @{
 

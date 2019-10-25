@@ -265,7 +265,7 @@ If($ExportToFile){
     }
     If ($Confirm){
         Write-Host "`nContinue (Y/N) ?" -BackgroundColor Red -ForegroundColor Blue
-        $Answer = Read-host
+        $Answer = "Y"
     } Else {
         $Answer = "Y"
     }
@@ -366,7 +366,7 @@ $Events4All | Group-Object LevelDisplayName | ft @{Label="Event Level";Expressio
 
 If ($ExportToFile){
     If (!(IsEmpty $EventID)){
-        $FileEventLogFirstID = "GetEventsFromEventLogs_$($EventID[0])_$(get-date -f yyyy-MM-dd-hh-mm-ss).csv"
+        $FileEventLogFirstID = "log.log"
         If (IsPSV3){
             $EventsReport = "$PSScriptRoot\$FileEventLogFirstID"
         } Else {
@@ -374,7 +374,7 @@ If ($ExportToFile){
         }
     } Else { 
         If (!(IsEmpty $EventSource)){
-            $FileEventLogFirstSource = "GetEventsFromEventLogs_$($EventSource[0])_$(get-date -f yyyy-MM-dd-hh-mm-ss).csv"
+            $FileEventLogFirstSource = "log.log"
             If (IsPSV3){
                 $EventsReport = "$PSScriptRoot\$FileEventLogFirstSource"
             } Else {
@@ -382,7 +382,7 @@ If ($ExportToFile){
             }
             
         } Else {
-            $FileNumberOfLastEvents = "GetEventsFromEventLogs_Last_$($NumberOfLastEventsToGet)_$(get-date -f yyyy-MM-dd-hh-mm-ss).csv"
+            $FileNumberOfLastEvents = "log.log"
             If(IsPSV3){
                 $EventsReport = "$PSScriptRoot\$FileNumberOfLastEvents"
             } else {

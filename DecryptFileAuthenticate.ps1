@@ -27,7 +27,7 @@
   .EXAMPLE
     $SeedPassword = "justApassword987&&"; 
   #>
- function FunctionName {
+ Wfunction FunctionName {
    param ( [string]$SeedPasswordKey
    )
    
