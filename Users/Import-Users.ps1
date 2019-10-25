@@ -1,5 +1,5 @@
 $UserList = Import-Csv -Path C:\names\usernames.csv 
-
+$pass = Read-Host "Enter Password for every user" -AsSecureString
 foreach ($User in $UserList) {
    $User.FirstName = $User.FirstName.trim()  ##Clear leading and trailing spaces
    $User.LastName  = $User.LastName.trim()  ##Clear leading and trailing spaces
@@ -24,7 +24,7 @@ foreach ($User in $UserList) {
         GivenName = $User.FirstName
         Surname = $User.LastName
 
-        AccountPassword = 'Cloud##123$$' | ConvertTo-SecureString -AsPlainText -Force
+        AccountPassword = $pass
 
      }
 
