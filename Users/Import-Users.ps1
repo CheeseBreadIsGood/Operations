@@ -1,3 +1,7 @@
+
+
+
+
 $UserList = Import-Csv -Path C:\names\usernames.csv 
 $pass = Read-Host "Enter Password for every user" -AsSecureString
 foreach ($User in $UserList) {
