@@ -36,4 +36,4 @@ Set-RDCertificate @Splatting -Role RDRedirector -Force
 (Get-WebBinding -Name 'LegrandAPI' -Port 443 -Protocol "https").AddSslCertificate($CertThumb, "my")
 (Get-WebBinding -Name 'LegrandCRM' -Port 443 -Protocol "https").AddSslCertificate($CertThumb, "my")
 
-Restart-Computer
+Restart-Computer -force
