@@ -2,7 +2,7 @@
 
 
 
-$UserList = Import-Csv -Path C:\names\usernames.csv 
+$UserList = Import-Csv -Path C:\NoobehIT\ServerSetup\MISCsoftware\usernames.csv 
 $pass = Read-Host "Enter Password for every user" -AsSecureString
 foreach ($User in $UserList) {
    $User.FirstName = $User.FirstName  -replace '[^a-zA-Z0-9]', '' ##.trim()  ##Clear leading and trailing spaces
