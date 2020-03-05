@@ -44,6 +44,13 @@
   }  
   #endregion
 $SData = import-csv $Sfile #read in the plain csv file
+$headers = ($SData | Get-Member -MemberType NoteProperty).Name
+$SData | ForEach-Object (
+  foreach ($line in $SData)
+  {
+      $line.Read | out-host;
+  }
+
 
 
   $creObject = [PSCustomObject]@{     #Make a simple object so we can save all the ecrypted items as a csv file
