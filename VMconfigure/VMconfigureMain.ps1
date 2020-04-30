@@ -1,4 +1,32 @@
 ####################--PowerShell Configure New Server with external hard drive ###########
+
+<#---------------------------------CreateEncrypedDFile.ps1
+  .SYNOPSIS
+    Used to create a csv file of encrypted string using a String key password (Should be complex)
+
+  .DESCRIPTION
+    Used to create a csv file of Three encrypted string using a String key password (Should be complex). It will be then saved to a CSV file.
+    Items to encrypt are for authenticating to Azure as a service principal. Items are SPusername, IAM Key(Password), and the Azure Tenant ID 
+
+  .PARAMETER Key
+    Mandatory. The $SeedPasswordKey will be typed in and turned into bytes for use as a $key to encrypt your $EncryptThisNow string. 
+    There is some padding or removal of this byte formated string to make it fit the size required for an AES key. 
+    You can use 16, 24, or 32 bytes for AES,which is 128,192,or 256 bits respectivly
+  .INPUTS
+    $SeedPassword - A typed secure password. $EncryptThisNow - is the string that you want to encrypt using $SeedPassword you inputed
+
+  .OUTPUTS
+    A CSV file that have all three strings encrypted with the $SeedPasswordKey. 
+
+  .NOTES
+    Version:        1.0
+    Author:         Mike Ryan   
+    Creation Date:  09/29/19
+    Purpose/Change: Initial function development
+
+  .EXAMPLE
+    $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
+  #>
  
 ### Set server as Domain Controller
 $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
