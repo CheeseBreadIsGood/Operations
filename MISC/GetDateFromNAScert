@@ -1,0 +1,27 @@
+
+
+## Get expiration date from Noobeh cloudNAS
+$CertPath = '\\noobehnas.file.core.windows.net\cloudnas\ServerSetup\Certificates\CurrentCertNoobeh\certificate.pfx'
+$ScriptPath = '\\noobehnas.file.core.windows.net\cloudnas\ServerSetup\Certificates\Speak.ps1'
+##$CertPwd = Read-Host -Prompt 'Certificate Password =-->'  -AsSecureString #Get the Cert private key password
+
+# store password as securestring
+$PlainPassword = "*********"
+$CertPwd = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
+
+
+#  First see if it is a vailid signature on the Cloud NAS certificate certificate.pfx
+(Get-AuthenticodeSignature $CertPath).Status -eq 'Valid' #this will returne a boolean value TRUE if valid
+
+
+##Lets get the Cloud NAS file certificate into an object we can interrogate.
+$FileCertObject = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+$FileCertObject.Import($CertPath, $CertPwd, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::DefaultKeySet)
+
+
+
+(Get-AuthenticodeSignature $ScriptPath).Status -eq 'Valid' #this will returne a boolean value TRUE if valid
+
+Set-AuthenticodeSignature -FilePath $ScriptPath -Certificate $FileCertObject
+
+Powershell.exe -ExecutionPolicy Unrestricted -File \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\Certificates\speak.ps1

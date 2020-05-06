@@ -1,79 +1,36 @@
 ####################--PowerShell Configure New Server with external hard drive ###########
 
-<#---------------------------------CreateEncrypedDFile.ps1
+<#---------------------------------VMconfigureMain.ps1
   .SYNOPSIS
-    Used to create a csv file of encrypted string using a String key password (Should be complex)
-
+    Used to create a new server setup with all the default settings that noobeh requires
   .DESCRIPTION
-    Used to create a csv file of Three encrypted string using a String key password (Should be complex). It will be then saved to a CSV file.
-    Items to encrypt are for authenticating to Azure as a service principal. Items are SPusername, IAM Key(Password), and the Azure Tenant ID 
-
-  .PARAMETER Key
-    Mandatory. The $SeedPasswordKey will be typed in and turned into bytes for use as a $key to encrypt your $EncryptThisNow string. 
-    There is some padding or removal of this byte formated string to make it fit the size required for an AES key. 
-    You can use 16, 24, or 32 bytes for AES,which is 128,192,or 256 bits respectivly
-  .INPUTS
-    $SeedPassword - A typed secure password. $EncryptThisNow - is the string that you want to encrypt using $SeedPassword you inputed
-
-  .OUTPUTS
-    A CSV file that have all three strings encrypted with the $SeedPasswordKey. 
+    This will install some software configure external hard drive and create a default domain controller 
 
   .NOTES
     Version:        1.0
     Author:         Mike Ryan   
-    Creation Date:  09/29/19
-    Purpose/Change: Initial function development
-
-  .EXAMPLE
-    $SeedPassword = "justApassword"; $EncryptThisNow = "This is the sting that I want to encrypt witht he $SeedPassword"
-  #>
+    Creation Date:  05/1/20
+    Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
+#>
  
-### Set server as Domain Controller
-$PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
-Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
+<#------- Set-NTFSsecurity ------#>
+Function Set-NTFSsecurity {
+  ## Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
+$FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup','C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone to these Folders, so malware can find CoalMine
+Foreach($FolderPath in $FolderPathArray){ 
+$ACL = Get-Acl $FolderPath
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    'Everyone', #Identity
+    'Modify', # Rights
+    'None',   #inheritance  This folder only - None
+    'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+    'Allow')  #type set for everyone modify rights to folder
+$ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
+#########################################################################################endregion
+}
 
-#Set time zone et
-Set-TimeZone "Eastern Standard Time"
-
-### Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
-### Restart-computer -force
-
-
-####################--PowerShell Configure New Server with external hard drive ###########
- 
-set-executionpolicy remotesigned -force
-
-## Set server as Domain Controller
-$PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
-##import-module servermanager
-
-Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
-
-#Set time zone et
-Set-TimeZone "Eastern Standard Time"
-
-
-##Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
-Restart-computer -force
-
-import-module RemoteDesktop
-New-RDSessionDeployment -ConnectionBroker "Server.Cloud.local" -WebAccessServer  "Server.Cloud.local" -SessionHost  "Server.Cloud.local"
-New-rdSessionDeployment -ConnectionBroker server.cloud.local -SessionHost server.cloud.local
-Add-RDServer -Server "Server.Cloud.local" -Role "RDS-WEB-ACCESS" -ConnectionBroker "Server.Cloud.local"
-Add-RDServer -Server "Server.Cloud.local" -Role "RDS-GATEWAY" -ConnectionBroker "Server.Cloud.local" -GatewayExternalFqdn "MISYS.Noobeh.net"
-Add-RDServer -Server "Server.Cloud.local" -Role "RDS-LICENSING" -ConnectionBroker "Server.Cloud.local" 
-
-#let users remote desktop into server
-Add-ADGroupMember -identity "Remote Desktop Users" -Members "Domain Users"
-
-
-## Format attached new Drive to Letter F:
-#Bring data disks online and initialize them
-Get-Disk | Where-Object PartitionStyle –Eq "RAW"| Initialize-Disk -PartitionStyle GPT   
-Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False      
-#########################################################################################
+### Lets create security settings for the DATA folder on the F: drive
 ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
 New-Item -Path 'F:\DATA\' -ItemType Directory
 ## Blow out and remove all File INHERITANCE########################
@@ -138,6 +95,56 @@ $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
 $acl.SetAccessRule($AccessRule)
 $acl | Set-Acl f:\data
 ### END adding security for USERS and Admins
+
+  
+}
+
+### Set server as Domain Controller
+$PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
+Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
+Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
+
+#Set time zone et
+Set-TimeZone "Eastern Standard Time"
+
+### Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
+### Restart-computer -force
+
+
+####################--PowerShell Configure New Server with external hard drive ###########
+ 
+set-executionpolicy remotesigned -force
+
+## Set server as Domain Controller
+$PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
+##import-module servermanager
+
+Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
+Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
+
+#Set time zone et
+Set-TimeZone "Eastern Standard Time"
+
+
+##Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
+Restart-computer -force
+
+import-module RemoteDesktop
+New-RDSessionDeployment -ConnectionBroker "Server.Cloud.local" -WebAccessServer  "Server.Cloud.local" -SessionHost  "Server.Cloud.local"
+New-rdSessionDeployment -ConnectionBroker server.cloud.local -SessionHost server.cloud.local
+Add-RDServer -Server "Server.Cloud.local" -Role "RDS-WEB-ACCESS" -ConnectionBroker "Server.Cloud.local"
+Add-RDServer -Server "Server.Cloud.local" -Role "RDS-GATEWAY" -ConnectionBroker "Server.Cloud.local" -GatewayExternalFqdn "MISYS.Noobeh.net"
+Add-RDServer -Server "Server.Cloud.local" -Role "RDS-LICENSING" -ConnectionBroker "Server.Cloud.local" 
+
+#let users remote desktop into server
+Add-ADGroupMember -identity "Remote Desktop Users" -Members "Domain Users"
+
+
+## Format attached new Drive to Letter F:
+#Bring data disks online and initialize them
+Get-Disk | Where-Object PartitionStyle –Eq "RAW"| Initialize-Disk -PartitionStyle GPT   
+Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False      
+#########################################################################################
 
 ###Now finished creating the sub folders
 New-Item -Path 'F:\DATA\AppsData' -ItemType Directory  -ErrorAction Ignore 
