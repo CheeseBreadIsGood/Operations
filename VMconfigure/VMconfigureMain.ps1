@@ -1,21 +1,20 @@
 ####################--PowerShell Configure New Server with external hard drive ###########
 
-<#---------------------------------VMconfigureMain.ps1
+<# TTT        VMconfigureMain.ps1      TTT
   .SYNOPSIS
     Used to create a new server setup with all the default settings that noobeh requires
   .DESCRIPTION
     This will install some software configure external hard drive and create a default domain controller 
-
+  
   .NOTES
     Version:        1.0
     Author:         Mike Ryan   
     Creation Date:  05/1/20
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
 #>
- 
-<#------- Set-NTFSsecurity ------#>
 Function Set-NTFSsecurity {
-  ## Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
+    
+  #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
 $FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup','C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone to these Folders, so malware can find CoalMine
 Foreach($FolderPath in $FolderPathArray){ 
 $ACL = Get-Acl $FolderPath
@@ -98,8 +97,10 @@ $acl | Set-Acl f:\data
 
   
 }
-
+Function Set-DomainController{
 ### Set server as Domain Controller
+if ((gwmi win32_computersystem).partofdomain -eq $False) {
+
 $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
 Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
 Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
@@ -111,7 +112,7 @@ Set-TimeZone "Eastern Standard Time"
 ### Restart-computer -force
 
 
-####################--PowerShell Configure New Server with external hard drive ###########
+
  
 set-executionpolicy remotesigned -force
 
@@ -124,11 +125,12 @@ Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPas
 
 #Set time zone et
 Set-TimeZone "Eastern Standard Time"
-
-
 ##Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
 Restart-computer -force
-
+Exit 
+}
+}
+<#                         ! NOT USED
 import-module RemoteDesktop
 New-RDSessionDeployment -ConnectionBroker "Server.Cloud.local" -WebAccessServer  "Server.Cloud.local" -SessionHost  "Server.Cloud.local"
 New-rdSessionDeployment -ConnectionBroker server.cloud.local -SessionHost server.cloud.local
@@ -136,115 +138,38 @@ Add-RDServer -Server "Server.Cloud.local" -Role "RDS-WEB-ACCESS" -ConnectionBrok
 Add-RDServer -Server "Server.Cloud.local" -Role "RDS-GATEWAY" -ConnectionBroker "Server.Cloud.local" -GatewayExternalFqdn "MISYS.Noobeh.net"
 Add-RDServer -Server "Server.Cloud.local" -Role "RDS-LICENSING" -ConnectionBroker "Server.Cloud.local" 
 
+
 #let users remote desktop into server
 Add-ADGroupMember -identity "Remote Desktop Users" -Members "Domain Users"
-
-
-## Format attached new Drive to Letter F:
+#>
+Function Set-CopyNoobehFiles{
+    #Open the NoobehNAS
+net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
+#Copy important files over to the new server
+New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT
+Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\ c:\noobehIT -Recurse -Force
+Copy-Item C:\NoobehIT\ServerSetup\Bginfo\BginfoSetting* "C:\Users\ServerAdmin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+Copy-Item "C:\NoobehIT\ServerSetup\Graphics\Log Off Noobeh.lnk" "C:\Users\Public\Desktop\"
+net use /delete \\noobehnas.file.core.windows.net\cloudnas
+}
+Function Set-DATAHarddrive{
+    ## Format attached new Drive to Letter F:
 #Bring data disks online and initialize them
+#################### PowerShell Configure New Server with external hard drive ###########
+
 Get-Disk | Where-Object PartitionStyle –Eq "RAW"| Initialize-Disk -PartitionStyle GPT   
 Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False      
 #########################################################################################
 
-###Now finished creating the sub folders
+###Now create the sub folders to this seconddary hard drive
 New-Item -Path 'F:\DATA\AppsData' -ItemType Directory  -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\AppsData\Qbooks' -ItemType Directory  -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\AppsInstallers' -ItemType Directory -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore 
-### Finish adding data folder on the F: drive with users security.
-
-#Open the NoobehNAS
-net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
-
-##NOTE PLEASE CREATE NEW SECRUITY FOR EVERYONE. SO MALWARE CAN GET TO CANARY
-
-#Copy important files over to the new server
-New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT
 
 
-
-
-Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\ c:\noobehIT -Recurse -Force
-Copy-Item C:\NoobehIT\ServerSetup\Bginfo\BginfoSetting* "C:\Users\ServerAdmin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-
-Copy-Item "C:\NoobehIT\ServerSetup\Graphics\Log Off Noobeh.lnk" "C:\Users\Public\Desktop\"
-
-##   Create CoalMine with less security for malware to find.  #####
-New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT\CoalMine
-
-
-New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT\CoalMine
-## Blow out and remove all File INHERITANCE########################
-
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'ServerAdmin',  #user
-    'FullControl',     #FileSystemRights
-    'ObjectInherit, ContainerInherit',   #InheritanceFlage
-    'None',
-    'Allow'
-)
-
-$FolderPath = "c:\NoobehIT\CoalMine"
-##New-Item -ItemType directory -Path $FolderPath
-$acl = Get-Acl $FolderPath
-$acl.SetAccessRuleProtection($True, $False)
-$acl.Access | % { $acl.RemoveAccessRule($_) } # I remove all security
-
-
-# Not needed:
-# $acl.SetOwner([System.Security.Principal.NTAccount] $env:USERNAME) # I set the current user as owner
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule('ServerAdmin', 'FullControl', 'Allow') # I set my admin account as also having access
-$acl.AddAccessRule($rule)
-(Get-Item $FolderPath).SetAccessControl($acl)  ## removes all users in the ACL. BLOWS them away!
-### Finished removing all INHERITANCE ###############
-
-### Now build up security for Admins and Domain users on DATA folder
-$acl = Get-Acl $FolderPath
-
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\users","Modify","Allow") # changed to Modify
-
-$acl.RemoveAccessRule($AccessRule)
-
-$acl | Set-Acl $FolderPath
-###################part 2
-
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\administrators","FullControl","Allow")
-
-
-###    ADD Administrators to the folder security
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'builtin\Administrators',
-    'FullControl',
-    'ContainerInherit, ObjectInherit',
-    'None',
-    'Allow'
-)
-
-$acl.SetAccessRule($AccessRule)
-
-$acl | Set-Acl $FolderPath
-
-## now add security for the everyone users
-
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'Everyone',
-    'Modify',
-    'ContainerInherit, ObjectInherit',
-    'None',
-    'Allow'
-)
-
-$acl.SetAccessRule($AccessRule)
-$acl | Set-Acl $FolderPath
-### END adding security for USERS and Admins
-###Move canary to this coalmine
-Copy-item -Path C:\NoobehIT\ServerSetup\CoalMine\* -Destination C:\NoobehIT\CoalMine
-## clean up & Delete orginal coalmine inside the serversetup folder
-Remove-Item C:\NoobehIT\ServerSetup\CoalMine -recurse  -Force
-##### END creating and moving CoalMine items ##################################
-###############################################
-
-
+}
+Function Set-GPOsettings{
  ############     GPO     ############
 
 New-ADOrganizationalUnit -Name "CloudUsers" -Description "Client Users"
@@ -268,20 +193,14 @@ Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName LicenseServers  -Type String -Value "localhost"
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName LicensingMode  -Type DWord -Value 4
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName fNoRemoteDesktopWallpaper  -Type DWord -Value 0
-
-
-
-
 ##Now set password policy from DEFAULT DOMAIN POLICY
 Set-ADDefaultDomainPasswordPolicy -Identity Cloud.local -MinPasswordLength 12 -MinPasswordAge 0 -MaxPasswordAge 0  -PasswordHistoryCount 0
-
-
 ##Now make sure Local Group Policy shows it by a refresh
 Invoke-Command {gpupdate /force}
 
 #=====================END GPO=============================================================
-
-
+}
+Function Set-Office365Install{
 ###############################
 #DNS forwarders
 $ipss = ("156.154.70.4", "156.154.71.4")
@@ -300,7 +219,8 @@ $cmd = @"
 "Setup.exe /configure configuration.xml"
 "@
 & cmd.exe /c $cmd
-
+}
+Function Set-SoftwareInstall{
 #Chocolety  ###############################
 Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
 
@@ -313,7 +233,8 @@ Choco install Microsoft-edge -y
 choco install git.install --params "/GitOnlyOnPath /NoGitLfs /NoShellIntegration /SChannel /NoAutoCrlf" --force -y
  & "C:\Program Files\Git\bin\git.exe" clone https://github.com/CheeseBreadIsGood/AzureVM.git
  Install-Module -Name Az -AllowClobber -Scope CurrentUser -force
-
+}
+Function Set-Misc{
 #### memory compression
 ##### Server 2019 Memory Compression/PageCombining
 
@@ -326,7 +247,8 @@ get-mmagent
 ##setup windows search to auto start up
 Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
-
+}
+Function Set-ShadowCopy{
 ####################Start Shadow Copy####
 
    Function New-ScheduledTaskFolder
@@ -343,9 +265,6 @@ start-service -name Wsearch
         Finally { $ErrorActionPreference = "continue" }
     }
    
-
-###  Start ENTRY POINT Main  ###  
-
 ## Create folder
 New-ScheduledTaskFolder Noobeh
    
@@ -378,9 +297,13 @@ New-ScheduledTaskFolder Noobeh
     Register-ScheduledTask -TaskName ShadowCopyF_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyD_PM" -TaskPath "Noobeh"
 
 ### END ShadowCopy configuration ###
+}
 
 
-net use /delete \\noobehnas.file.core.windows.net\cloudnas
+
+###  Start ENTRY POINT Main  ###  
+
+
 #--------------------------------------------------------------end------------------------------------------------
 
 
