@@ -12,91 +12,7 @@
     Creation Date:  05/1/20
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
 #>
-Function Set-NTFSsecurity {
-    
-  #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
-$FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup','C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone to these Folders, so malware can find CoalMine
-Foreach($FolderPath in $FolderPathArray){ 
-$ACL = Get-Acl $FolderPath
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'Everyone', #Identity
-    'Modify', # Rights
-    'None',   #inheritance  This folder only - None
-    'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
-    'Allow')  #type set for everyone modify rights to folder
-$ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
-Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
-#########################################################################################endregion
-}
 
-### Lets create security settings for the DATA folder on the F: drive
-##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
-New-Item -Path 'F:\DATA\' -ItemType Directory
-## Blow out and remove all File INHERITANCE########################
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'ServerAdmin',
-    'FullControl',
-    'ObjectInherit, ContainerInherit',
-    'None',
-    'Allow'
-)
-
-$FolderPath = "F:\DATA"
-##New-Item -ItemType directory -Path $FolderPath
-$acl = Get-Acl $FolderPath
-$acl.SetAccessRuleProtection($True, $False)
-$acl.Access | % { $acl.RemoveAccessRule($_) } # I remove all security
-
-
-# Not needed:
-# $acl.SetOwner([System.Security.Principal.NTAccount] $env:USERNAME) # I set the current user as owner
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule('ServerAdmin', 'FullControl', 'Allow') # I set my admin account as also having access
-$acl.AddAccessRule($rule)
-(Get-Item $FolderPath).SetAccessControl($acl)  ## removes all users in the ACL. BLOWS them away!
-### Finished removing all INHERITANCE ###############
-
-### Now build up security for Admins and Domain users on DATA folder
-$acl = Get-Acl f:\data
-
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\users","Modify","Allow") ##Changed to Modify
-
-$acl.RemoveAccessRule($AccessRule)
-
-$acl | Set-Acl f:\data
-###################part 2
-
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\administrators","FullControl","Allow")
-
-
-###    ADD Administrators to the folder security
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'builtin\Administrators',
-    'FullControl',
-    'ContainerInherit, ObjectInherit',
-    'None',
-    'Allow'
-)
-
-$acl.SetAccessRule($AccessRule)
-
-$acl | Set-Acl f:\data
-
-## now add security for the domain users
-
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'cloud\domain users',
-    'Modify',
-    'ContainerInherit, ObjectInherit',
-    'None',
-    'Allow'
-)
-
-$acl.SetAccessRule($AccessRule)
-$acl | Set-Acl f:\data
-### END adding security for USERS and Admins
-
-  
-}
 Function Set-DomainController{
 ### Set server as Domain Controller
 if ((gwmi win32_computersystem).partofdomain -eq $False) {
@@ -169,6 +85,90 @@ New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore
 
 
 }
+Function Set-NTFSsecurity {
+    
+    #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
+  $FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup','C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone to these Folders, so malware can find CoalMine
+  Foreach($FolderPath in $FolderPathArray){ 
+  $ACL = Get-Acl $FolderPath
+  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+      'Everyone', #Identity
+      'Modify', # Rights
+      'None',   #inheritance  This folder only - None
+      'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+      'Allow')  #type set for everyone modify rights to folder
+  $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+  Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
+  #########################################################################################endregion
+  }
+  
+  ### Lets create security settings for the DATA folder on the F: drive
+  ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
+  New-Item -Path 'F:\DATA\' -ItemType Directory
+  ## Blow out and remove all File INHERITANCE########################
+  $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+      'ServerAdmin',
+      'FullControl',
+      'ObjectInherit, ContainerInherit',
+      'None',
+      'Allow'
+  )
+ 
+  ##New-Item -ItemType directory -Path $FolderPath
+  $acl = Get-Acl $FolderPath
+  $acl.SetAccessRuleProtection($True, $False)
+  $acl.Access | % { $acl.RemoveAccessRule($_) } # I remove all security
+  
+  
+  # Not needed:
+  # $acl.SetOwner([System.Security.Principal.NTAccount] $env:USERNAME) # I set the current user as owner
+  $rule = New-Object System.Security.AccessControl.FileSystemAccessRule('ServerAdmin', 'FullControl', 'Allow') # I set my admin account as also having access
+  $acl.AddAccessRule($rule)
+  (Get-Item $FolderPath).SetAccessControl($acl)  ## removes all users in the ACL. BLOWS them away!
+  ### Finished removing all INHERITANCE ###############
+  
+  ### Now build up security for Admins and Domain users on DATA folder
+  $acl = Get-Acl f:\data
+  
+  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\users","Modify","Allow") ##Changed to Modify
+  
+  $acl.RemoveAccessRule($AccessRule)
+  
+  $acl | Set-Acl f:\data
+  ###################part 2
+  
+  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\administrators","FullControl","Allow")
+  
+  
+  ###    ADD Administrators to the folder security
+  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+      'builtin\Administrators',
+      'FullControl',
+      'ContainerInherit, ObjectInherit',
+      'None',
+      'Allow'
+  )
+  
+  $acl.SetAccessRule($AccessRule)
+  
+  $acl | Set-Acl f:\data
+  
+  ## now add security for the domain users
+  
+  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+      'cloud\domain users',
+      'Modify',
+      'ContainerInherit, ObjectInherit',
+      'None',
+      'Allow'
+  )
+  
+  $acl.SetAccessRule($AccessRule)
+  $acl | Set-Acl f:\data
+  ### END adding security for USERS and Admins
+  
+    
+  }
 Function Set-GPOsettings{
  ############     GPO     ############
 
@@ -302,7 +302,15 @@ New-ScheduledTaskFolder Noobeh
 
 
 ###  Start ENTRY POINT Main  ###  
-
+Set-DomainController
+Set-CopyNoobehFiles
+Set-DATAHarddrive
+Set-NTFSsecurity
+Set-GPOsettings
+Set-Office365Install
+Set-SoftwareInstall
+Set-Misc
+Set-ShadowCopy
 
 #--------------------------------------------------------------end------------------------------------------------
 
