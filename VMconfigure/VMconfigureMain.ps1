@@ -77,6 +77,11 @@ Get-Disk | Where-Object PartitionStyle –Eq "RAW"| Initialize-Disk -PartitionSt
 Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False      
 #########################################################################################
 
+
+## Not needed      New-Item -Path 'F:\DATA\' -ItemType Directory -ErrorAction Ignore 
+
+
+
 ###Now create the sub folders to this seconddary hard drive
 New-Item -Path 'F:\DATA\AppsData' -ItemType Directory  -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\AppsData\Qbooks' -ItemType Directory  -ErrorAction Ignore 
@@ -85,10 +90,10 @@ New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore
 
 
 }
-Function Set-NTFSsecurity {
+Function Set-NTFSsecurity{
     
     #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
-  $FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup','C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone to these Folders, so malware can find CoalMine
+  $FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup') #Ad Everyone to these Folders, so malware can find CoalMine
   Foreach($FolderPath in $FolderPathArray){ 
   $ACL = Get-Acl $FolderPath
   $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
@@ -102,9 +107,24 @@ Function Set-NTFSsecurity {
   #########################################################################################endregion
   }
   
+  $FolderPathArray = @('C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone & subcontains to these Folders, so malware can find CoalMine
+  Foreach($FolderPath in $FolderPathArray){ 
+  $ACL = Get-Acl $FolderPath
+  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+      'Everyone', #Identity
+      'Modify', # Rights
+      'ObjectInherit, ContainerInherit',  #inheritance  This folder only - None
+      'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+      'Allow')  #type set for everyone modify rights to folder
+  $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+  Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
+  #########################################################################################endregion
+  }
+  
+ 
   ### Lets create security settings for the DATA folder on the F: drive
   ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
-  New-Item -Path 'F:\DATA\' -ItemType Directory
+
   ## Blow out and remove all File INHERITANCE########################
   $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
       'ServerAdmin',
@@ -113,7 +133,6 @@ Function Set-NTFSsecurity {
       'None',
       'Allow'
   )
- 
   ##New-Item -ItemType directory -Path $FolderPath
   $acl = Get-Acl $FolderPath
   $acl.SetAccessRuleProtection($True, $False)
@@ -122,9 +141,15 @@ Function Set-NTFSsecurity {
   
   # Not needed:
   # $acl.SetOwner([System.Security.Principal.NTAccount] $env:USERNAME) # I set the current user as owner
-  $rule = New-Object System.Security.AccessControl.FileSystemAccessRule('ServerAdmin', 'FullControl', 'Allow') # I set my admin account as also having access
-  $acl.AddAccessRule($rule)
-  (Get-Item $FolderPath).SetAccessControl($acl)  ## removes all users in the ACL. BLOWS them away!
+  $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    'ServerAdmin',  # I set my admin account as also having access
+    'FullControl',
+    'ObjectInherit, ContainerInherit',
+    'None', 
+    'Allow') 
+   $acl.AddAccessRule($rule)
+  
+   (Get-Item $FolderPath).SetAccessControl($acl)  ## removes all users in the ACL. BLOWS them away!
   ### Finished removing all INHERITANCE ###############
   
   ### Now build up security for Admins and Domain users on DATA folder
@@ -165,6 +190,7 @@ Function Set-NTFSsecurity {
   
   $acl.SetAccessRule($AccessRule)
   $acl | Set-Acl f:\data
+  
   ### END adding security for USERS and Admins
   
     
@@ -305,8 +331,8 @@ New-ScheduledTaskFolder Noobeh
 Set-DomainController
 Set-CopyNoobehFiles
 Set-DATAHarddrive
-Set-NTFSsecurity
 Set-GPOsettings
+Set-NTFSsecurity
 Set-Office365Install
 Set-SoftwareInstall
 Set-Misc
