@@ -99,7 +99,7 @@ Function Set-NTFSsecurity{
   $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
       'Everyone', #Identity
       'Modify', # Rights
-      'None',   #inheritance  This folder only - None
+      'None',   #inheritance  None=This folder only Containerinherit=The ACE is inherited by child container objects.
       'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
       'Allow')  #type set for everyone modify rights to folder
   $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
@@ -327,7 +327,8 @@ New-ScheduledTaskFolder Noobeh
 
 
 
-###  Start ENTRY POINT Main  ###  
+###  Start ENTRY POINT Main  ### 
+#If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
 Set-DomainController
 Set-CopyNoobehFiles
 Set-DATAHarddrive
