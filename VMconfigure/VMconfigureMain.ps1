@@ -253,6 +253,7 @@ Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
 
 
 Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))  
+choco feature enable -n allowGlobalConfirmation
 Choco install GoogleChrome, adobereader, windirstat -y
 
 Choco install Microsoft-edge -y
