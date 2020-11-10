@@ -313,7 +313,13 @@ New-ScheduledTaskFolder Noobeh
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=C:"
     $Trigger=new-scheduledtasktrigger -daily -at 2:30PM
     Register-ScheduledTask -TaskName ShadowCopyC_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyC_PM" -TaskPath "Noobeh"
+    
+        #Set Shadow Copy Scheduled Task for C: PM
+    $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=C:"
+    $Trigger=new-scheduledtasktrigger -daily -at 11:30PM
+    Register-ScheduledTask -TaskName ShadowCopyC_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyC_Late_PM" -TaskPath "Noobeh"
 
+###
     #Set Shadow Copy Scheduled Task for F: AM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=F:"
     $Trigger=new-scheduledtasktrigger -daily -at 10:45AM
@@ -323,6 +329,11 @@ New-ScheduledTaskFolder Noobeh
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=F:"
     $Trigger=new-scheduledtasktrigger -daily -at 2:45PM
     Register-ScheduledTask -TaskName ShadowCopyF_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyD_PM" -TaskPath "Noobeh"
+    
+    #Set Shadow Copy Scheduled Task for F: PM
+    $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=F:"
+    $Trigger=new-scheduledtasktrigger -daily -at 11:45PM
+    Register-ScheduledTask -TaskName ShadowCopyF_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyD_Late_PM" -TaskPath "Noobeh"
 
 ### END ShadowCopy configuration ###
 }
