@@ -161,7 +161,7 @@ $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, 
 Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   ### Finished removing all INHERITANCE ###############
   
-  ### Now build up security for Admins and Domain users on DATA folder
+  <### Now build up security for Admins and Domain users on DATA folder
   $acl = Get-Acl f:\data
   
   $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\users","Modify","Allow") ##Changed to Modify
@@ -200,7 +200,7 @@ Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   $acl.SetAccessRule($AccessRule)
   $acl | Set-Acl f:\data
   
-  ### END adding security for USERS and Admins
+  ### END adding security for USERS and Admins #>
   
     
   }
@@ -261,7 +261,7 @@ C:\NoobehIT\ServerSetup\MISCsoftware\OneDriveServer\onedrivesetup.exe /allusers 
 Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
 
 
-Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))  
+Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))  
 choco feature enable -n allowGlobalConfirmation
 Choco install GoogleChrome, adobereader, windirstat -y
 
