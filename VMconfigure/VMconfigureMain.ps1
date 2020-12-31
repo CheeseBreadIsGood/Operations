@@ -126,30 +126,33 @@ Function Set-NTFSsecurity{
   ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
 
   ## Blow out and remove all File INHERITANCE########################
-  $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-      'ServerAdmin',
-      'FullControl',
-      'ObjectInherit, ContainerInherit',
-      'None',
-      'Allow'
-  )
-  ##New-Item -ItemType directory -Path $FolderPath
-  $acl = Get-Acl $FolderPath
-  $acl.SetAccessRuleProtection($True, $False)
-  $acl.Access | % { $acl.RemoveAccessRule($_) } # I remove all security
-  
-  
-  # Not needed:
-  # $acl.SetOwner([System.Security.Principal.NTAccount] $env:USERNAME) # I set the current user as owner
-  $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    'ServerAdmin',  # I set my admin account as also having access
-    'FullControl',
-    'ObjectInherit, ContainerInherit',
-    'None', 
-    'Allow') 
-   $acl.AddAccessRule($rule)
-  
-   (Get-Item $FolderPath).SetAccessControl($acl)  ## removes all users in the ACL. BLOWS them away!
+$FolderPath = "F:\test"
+$ACL = Get-Acl $FolderPath
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    'builtin\Administrators', #Identity
+    'FullControl', # Rights
+    'ContainerInherit,ObjectInherit',   #'ContainerInherit,ObjectInherit'  This folder and everything below
+    <#
+    Inheritance is what types child objects the ACE applies to. With a filesystem, containers = folder, objects = files.
+    Propagation controls which generation of child objects the ACE is restricted to. None= ACE appliies to all.
+    InheritOnly = ACe applies only to children and grandchildren, not to target folder. 
+    NoPropagateinherit = Target folder and target folder children, not grandchildren.
+    Https://msdn.microsoft.com/en-us/library/ms229747(v=vs.110).aspx
+    #>
+    'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+    'Allow')  #type set for everyone modify rights to folder
+$ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
+
+
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    'cloud\Domain Users', #Identity
+    'Modify', # Rights
+    'ContainerInherit,ObjectInherit',   #'ContainerInherit,ObjectInherit'  This folder and everything below
+    'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+    'Allow')  #type set for everyone modify rights to folder
+$ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   ### Finished removing all INHERITANCE ###############
   
   ### Now build up security for Admins and Domain users on DATA folder
