@@ -126,6 +126,12 @@ Function Set-NTFSsecurity{
   ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
 
   ## Blow out and remove all File INHERITANCE########################
+$folder = 'F:\DATA'
+$acl = Get-ACL -Path $folder
+$acl.SetAccessRuleProtection($True, $False) #remote inheritance & remove users
+Set-Acl -Path $folder -AclObject $acl #set it
+  
+  ## Now add in administrators ########################
 $FolderPath = "F:\DATA"
 $ACL = Get-Acl $FolderPath
 $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
