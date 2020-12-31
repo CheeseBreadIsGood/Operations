@@ -146,7 +146,7 @@ $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
     Https://msdn.microsoft.com/en-us/library/ms229747(v=vs.110).aspx
     #>
     'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
-    'Allow')  #type set for everyone modify rights to folder
+    'Allow')  #type set for this rule "Allow' Or 'Deny'
 $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
 Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
 
@@ -156,7 +156,7 @@ $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
     'Modify', # Rights
     'ContainerInherit,ObjectInherit',   #'ContainerInherit,ObjectInherit'  This folder and everything below
     'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
-    'Allow')  #type set for everyone modify rights to folder
+    'Allow')  #type set for this rule "Allow' Or 'Deny'
 $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
 Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   ### Finished removing all INHERITANCE ###############
