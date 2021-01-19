@@ -92,7 +92,7 @@ New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore
 }
 Function Set-NTFSsecurity{
     
-    #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
+ <# Not Needed anymore. This part   #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
   $FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup') #Ad Everyone to these Folders, so malware can find CoalMine
   Foreach($FolderPath in $FolderPathArray){ 
   $ACL = Get-Acl $FolderPath
@@ -120,7 +120,7 @@ Function Set-NTFSsecurity{
   Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   #########################################################################################endregion
   }
-  
+  #>
  
   ### Lets create security settings for the DATA folder on the F: drive
   ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
