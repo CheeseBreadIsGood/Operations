@@ -1,24 +1,24 @@
 ##Install certificate
 ## The location of the Cert.pfx file
-$CertPath = "C:\NoobehIT\ServerSetup\Certificates\MendelsonWild102419\certificate.pfx"
+$CertPath = "C:\NoobehIT\ServerSetup\Certificates\!.MendelsonConsulting.com\cert.pfx"
 
-
+## Note: posh program password for .pfx is poshacme
 $CertPwd = Read-Host -Prompt 'Certificate Password =-->'  -AsSecureString #Get the Cert private key password
 ## Place the new certificate into the machine\Personal store
 Import-PfxCertificate -FilePath $CertPath -CertStoreLocation 'Cert:\LocalMachine\My' -Password $CertPwd -Verbose 
 
-##Lets get teh Thumbprint of the new certificate. We will need it later
+##Lets get the Thumbprint of the new certificate. We will need it later
 $certificateObject = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
 $certificateObject.Import($CertPath, $CertPwd, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::DefaultKeySet)
 $CertThumb =  $certificateObject.Thumbprint
 #######################################################################
 ##Install the new certificate into RD services
-$Password = Read-Host -Prompt 'Password =-->'  -AsSecureString
+
 $LocalHostname = ([System.Net.Dns]::GetHostByName(($env:computerName))).Hostname #Display Fully Qualified Domain Name for local computer
 
 $Splatting =@{  ## the common settings we are going to splat, oh yeah.
     ImportPath = $CertPath
-    Password = $Password
+    Password = $CertPwd
     ConnectionBroker = $LocalHostname
 }
 
