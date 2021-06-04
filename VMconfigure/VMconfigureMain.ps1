@@ -258,8 +258,9 @@ $cmd = @"
 Function Set-SoftwareInstall{
 C:\NoobehIT\ServerSetup\MISCsoftware\OneDriveServer\onedrivesetup.exe /allusers /force /silent
 #Chocolety  ###############################
-Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
-
+#Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
+#PowerShellv5
+Install-Module PowerShellGet -Allow Clobber
 
 Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))  
 choco feature enable -n allowGlobalConfirmation
