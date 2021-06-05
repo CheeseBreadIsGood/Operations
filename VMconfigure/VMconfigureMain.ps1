@@ -258,7 +258,7 @@ $cmd = @"
 Function Set-SoftwareInstall{
 C:\NoobehIT\ServerSetup\MISCsoftware\OneDriveServer\onedrivesetup.exe /allusers /force /silent
 #Chocolety  ###############################
-Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
+Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
 #PowerShellv5
 #Install-Module PowerShellGet -Allow Clobber
 
