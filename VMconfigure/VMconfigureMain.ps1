@@ -159,47 +159,32 @@ $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
     'Allow')  #type set for this rule "Allow' Or 'Deny'
 $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
 Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
-  ### Finished removing all INHERITANCE ###############
   
-  <### Now build up security for Admins and Domain users on DATA folder
-  $acl = Get-Acl f:\data
-  
-  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\users","Modify","Allow") ##Changed to Modify
-  
-  $acl.RemoveAccessRule($AccessRule)
-  
-  $acl | Set-Acl f:\data
-  ###################part 2
-  
-  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("builtin\administrators","FullControl","Allow")
-  
-  
-  ###    ADD Administrators to the folder security
-  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-      'builtin\Administrators',
-      'FullControl',
-      'ContainerInherit, ObjectInherit',
-      'None',
-      'Allow'
-  )
-  
-  $acl.SetAccessRule($AccessRule)
-  
-  $acl | Set-Acl f:\data
-  
-  ## now add security for the domain users
-  
-  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-      'cloud\domain users',
-      'Modify',
-      'ContainerInherit, ObjectInherit',
-      'None',
-      'Allow'
-  )
-  
-  $acl.SetAccessRule($AccessRule)
-  $acl | Set-Acl f:\data
-  
+## Setup SYSTEM in qbooks folder
+$folder = 'F:\DATA'
+$acl = Get-ACL -Path $folder
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    'cloud\Domain Users', #Identity
+    'Modify', # Rights
+    'ContainerInherit,ObjectInherit',   #'ContainerInherit,ObjectInherit'  This folder and everything below
+    'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+    'Allow')  #type set for this rule "Allow' Or 'Deny'
+$ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
+
+
+## Setup SYSTEM in qbooks folder
+$folderPath = 'F:\DATA\AppsData\Qbooks'
+$acl = Get-ACL -Path $folder
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    'NT authority\system', #Identity
+    'Modify', # Rights
+    'ContainerInherit,ObjectInherit',   #'ContainerInherit,ObjectInherit'  This folder and everything below
+    'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
+    'Allow')  #type set for this rule "Allow' Or 'Deny'
+$ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
+Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
+
   ### END adding security for USERS and Admins #>
   
     
