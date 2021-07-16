@@ -6,7 +6,9 @@ Return
 ;-------------------------------------------------------------------------------
 Check4popups: ; auto-close the popup window
 ;-------------------------------------------------------------------------------
-    If WinExist("Untitled - Notepad ahk_exe Notepad.exe")
+
+
+    If WinExist("Calculator ahk_exe win32calc.exe")
         {
             WinClose   
             TrackType = "Notepad was it"
@@ -14,7 +16,7 @@ Check4popups: ; auto-close the popup window
             Return 
         }
 
-    If WinExist("Calculator ahk_exe ApplicationFrameHost.exe")
+    If WinExist("Untitled - Paint ahk_exe mspaint.exe")
         {
             WinClose   
             TrackType = "Notepad was it"
@@ -22,20 +24,68 @@ Check4popups: ; auto-close the popup window
             Return 
         }
 
-    If WinExist("Alarms & Clock")
+    If WinExist("Warning ahk_class MauuiMessage") ;This is themes changed
         {
             WinClose   
             TrackType = "Notepad was it"
-            ;MsgBox TrackType
+            ;MsgBox "Theme is Changed"
             Return 
+	    ;Kill QB
+	    ;Kill C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
+
+	    ;RUN C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
         }
 
-    If WinExist("Calculator ahk_exe ApplicationFrameHost.exe")
+    If WinExist("Bank Feeds In Use")
         {
             WinClose   
             TrackType = "Notepad was it"
-            ;MsgBox TrackType
+            ;MsgBox "Bank Feed in use"
             Return 
+	    ;Kill QB
+	    ;Kill C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
+
+	    ;RUN C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
+        }
+
+    If WinExist("Feature in use")
+        {
+            WinClose   
+            TrackType = "Notepad was it"
+            ;MsgBox "Feature In use"
+            Return 
+	    ;Kill QB
+	    ;Kill C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
+
+	    ;RUN C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
+        }
+
+    If WinExist("QuickBooks Desktop Login")
+        {
+            WinClose   
+            TrackType = "Notepad was it"
+            ;MsgBox "QuickBooks Desktop Login"
+            Return 
+	    ;Kill QB
+	    ;Kill C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;KILL C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
+
+	    ;RUN C:\Program Files (x86)\IRISXtract\Import\Import.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Export\Export.exe
+	    ;RUN C:\Program Files (x86)\IRISXtract\Analyze\bin\Analyze.exe
         }
 
 Return
