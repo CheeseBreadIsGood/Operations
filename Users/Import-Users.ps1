@@ -33,6 +33,3 @@ foreach ($User in $UserList) {
   New-ADUser @Attributes
  #$Attributes
 }
-
- #$Attributes
-}
