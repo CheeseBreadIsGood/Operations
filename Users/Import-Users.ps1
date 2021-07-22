@@ -1,5 +1,8 @@
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> db42acd619d5d3fa3929480c96dd34f49a5b8355
 $UserList = Import-Csv -Path C:\NoobehIT\ServerSetup\MISCsoftware\usernames.csv 
 $pass = Read-Host "Enter Password for every user" -AsSecureString
 foreach ($User in $UserList) {
