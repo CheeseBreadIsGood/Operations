@@ -26,11 +26,10 @@ foreach ($User in $UserList) {
         EmailAddress = $User.Email
         GivenName = $User.FirstName
         Surname = $User.LastName
-
         AccountPassword = $pass
         
      }
 
   New-ADUser @Attributes
  #$Attributes
-
+   }
