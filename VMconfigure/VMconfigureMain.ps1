@@ -19,7 +19,7 @@ if ((gwmi win32_computersystem).partofdomain -eq $False) {
 
 $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
 Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
+Install-ADDSForest -DomainName Cloud.Cloud -InstallDNS -SafeModeAdministratorPassword $PS -force
 
 #Set time zone et
 Set-TimeZone "Eastern Standard Time"
@@ -37,7 +37,7 @@ $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
 ##import-module servermanager
 
 Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
+Install-ADDSForest -DomainName Cloud.Cloud -InstallDNS -SafeModeAdministratorPassword $PS -force
 
 #Set time zone et
 Set-TimeZone "Eastern Standard Time"
@@ -46,18 +46,7 @@ Restart-computer -force
 Exit 
 }
 }
-<#                         ! NOT USED
-import-module RemoteDesktop
-New-RDSessionDeployment -ConnectionBroker "Server.Cloud.local" -WebAccessServer  "Server.Cloud.local" -SessionHost  "Server.Cloud.local"
-New-rdSessionDeployment -ConnectionBroker server.cloud.local -SessionHost server.cloud.local
-Add-RDServer -Server "Server.Cloud.local" -Role "RDS-WEB-ACCESS" -ConnectionBroker "Server.Cloud.local"
-Add-RDServer -Server "Server.Cloud.local" -Role "RDS-GATEWAY" -ConnectionBroker "Server.Cloud.local" -GatewayExternalFqdn "MISYS.Noobeh.net"
-Add-RDServer -Server "Server.Cloud.local" -Role "RDS-LICENSING" -ConnectionBroker "Server.Cloud.local" 
 
-
-#let users remote desktop into server
-Add-ADGroupMember -identity "Remote Desktop Users" -Members "Domain Users"
-#>
 Function Set-CopyNoobehFiles{
     #Open the NoobehNAS
 net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
@@ -198,8 +187,8 @@ New-GPO -Name StandardUserSettings -comment "For standard users mainly for backg
 New-GPO -Name RemoteDesktop -comment "For Remote Desktop users"
 
 
-New-GPLink -Name "StandardUserSettings"        -Target "OU=CloudUsers,dc=cloud,dc=local" -LinkEnabled Yes
-New-GPLink -Name "RemoteDesktop"  -Target "DC=cloud,DC=local" -LinkEnabled Yes
+New-GPLink -Name "StandardUserSettings"        -Target "OU=CloudUsers,dc=cloud,dc=Cloud" -LinkEnabled Yes
+New-GPLink -Name "RemoteDesktop"  -Target "DC=cloud,DC=Cloud" -LinkEnabled Yes
 
 
  ##NOW SET--StandardUserSettings
@@ -214,7 +203,7 @@ Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName LicensingMode  -Type DWord -Value 4
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName fNoRemoteDesktopWallpaper  -Type DWord -Value 0
 ##Now set password policy from DEFAULT DOMAIN POLICY
-Set-ADDefaultDomainPasswordPolicy -Identity Cloud.local -MinPasswordLength 12 -MinPasswordAge 0 -MaxPasswordAge 0  -PasswordHistoryCount 0
+Set-ADDefaultDomainPasswordPolicy -Identity Cloud.Cloud -MinPasswordLength 12 -MinPasswordAge 0 -MaxPasswordAge 0  -PasswordHistoryCount 0
 ##Now make sure Local Group Policy shows it by a refresh
 Invoke-Command {gpupdate /force}
 
