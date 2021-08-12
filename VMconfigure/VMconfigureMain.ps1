@@ -259,6 +259,8 @@ get-mmagent
 ##setup windows search to auto start up
 Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
+
+sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000 #60,000 is 1 minute. This is to fix the 1 in 100 server restarts. This service does not start and users can't log into their server
 }
 Function Set-ShadowCopy{
 ####################Start Shadow Copy####
