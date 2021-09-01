@@ -19,7 +19,7 @@ if ((gwmi win32_computersystem).partofdomain -eq $False) {
 
 $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
 Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.Cloud -InstallDNS -SafeModeAdministratorPassword $PS -force
+Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
 
 #Set time zone et
 Set-TimeZone "Eastern Standard Time"
@@ -37,7 +37,7 @@ $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
 ##import-module servermanager
 
 Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.Cloud -InstallDNS -SafeModeAdministratorPassword $PS -force
+Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
 
 #Set time zone et
 Set-TimeZone "Eastern Standard Time"
@@ -203,7 +203,7 @@ Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName LicensingMode  -Type DWord -Value 4
 Set-GPRegistryValue -Name "RemoteDesktop" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -ValueName fNoRemoteDesktopWallpaper  -Type DWord -Value 0
 ##Now set password policy from DEFAULT DOMAIN POLICY
-Set-ADDefaultDomainPasswordPolicy -Identity Cloud.Cloud -MinPasswordLength 12 -MinPasswordAge 0 -MaxPasswordAge 0  -PasswordHistoryCount 0
+Set-ADDefaultDomainPasswordPolicy -Identity Cloud.local -MinPasswordLength 12 -MinPasswordAge 0 -MaxPasswordAge 0  -PasswordHistoryCount 0
 ##Now make sure Local Group Policy shows it by a refresh
 Invoke-Command {gpupdate /force}
 
