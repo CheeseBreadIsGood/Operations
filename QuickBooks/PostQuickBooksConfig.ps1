@@ -51,5 +51,11 @@ Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Qu
 }
 
 
+## functions to finish
+
+Move-Data  #get new scripts from nas to local system
+Set-NTFSsecurity ## add service to folders
+Set-ScheduledJob ## run the new scripts anytime someone logs in.
+
 Set-ServerServices
 Move-QBjunk
