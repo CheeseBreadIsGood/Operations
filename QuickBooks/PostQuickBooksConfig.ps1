@@ -88,7 +88,7 @@ Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
     
 }
 
-Set-ScheduledQuickBooksCheck{ 
+Function Set-ScheduledQuickBooksCheck{ 
 
   Function New-ScheduledTaskFolder
 
