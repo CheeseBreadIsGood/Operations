@@ -88,7 +88,7 @@ Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
     
 }
 
-Set-ScheduledJob{ 
+Set-ScheduledQuickBooksCheck{ 
 
   Function New-ScheduledTaskFolder
 
@@ -119,8 +119,8 @@ Enable-ScheduledTask -TaskName CheckQBStatus  -TaskPath "Noobeh"
 }
 
 Function Set-ServerServices{
-    ### Set server as Domain Controller
-sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000 
+    
+sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000 ## Note related to QucikBooks but better health of server restarts
 
 sc.exe failure QBCFMonitorService reset= 86400 actions= restart/60000/restart/60000/restart/60000 
 sc.exe config  QBCFMonitorService obj="Localsystem"
@@ -160,7 +160,7 @@ Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Qu
 
 Get-NoobehData  #get new scripts from nas to local system
 Set-NTFSsecurity ## add local system NTFS security to folders
-Set-ScheduledJob ## run the new scripts anytime someone logs in.
+Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
 
 Set-ServerServices ## for QuickBooks services to automatic 
 Move-QBjunk ##QuickBooks extra autostart crap. Removed.
