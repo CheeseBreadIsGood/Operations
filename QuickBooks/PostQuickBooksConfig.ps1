@@ -147,7 +147,7 @@ If ($lastQBService.status -ne "Running" ) #if it is not running, Run it.
  $runcommand = "sc.exe failure $($lastQBService.DisplayName) reset= 86400 actions= restart/60000/restart/60000/restart/60000 #60,000 is 1 minute "
  Invoke-expression $runcommand
 
- $runCommand = sc.exe config $($lastQBService.DisplayName) obj="Localsystem"
+ $runCommand = "sc.exe config $($lastQBService.DisplayName) obj=LocalSystem"
  Invoke-expression $runcommand
 }
 Function Move-QBjunk{
