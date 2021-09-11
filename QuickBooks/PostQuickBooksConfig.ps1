@@ -17,7 +17,7 @@ Function Get-NoobehData {
   #Open the NoobehNAS
 net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
 #Copy important files over to the new server
-Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\AdminScripts C:\NoobehIT\ServerSetup\AdminScripts -Recurse -Force
+Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\AdminScripts C:\NoobehIT\ServerSetup\ -Recurse -Force
 net use /delete \\noobehnas.file.core.windows.net\cloudnas
 }
 Function Set-NTFSsecurity{
