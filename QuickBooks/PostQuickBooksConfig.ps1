@@ -120,7 +120,7 @@ Enable-ScheduledTask -TaskName CheckQBStatus  -TaskPath "Noobeh"
 
 Function Set-ServerServices{
     
-sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000 ## Note related to QucikBooks but better health of server restarts
+sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/400000/restart/800000 ## Note related to QucikBooks but better health of server restarts
 
 sc.exe failure QBCFMonitorService reset= 86400 actions= restart/60000/restart/60000/restart/60000 
 sc.exe config  QBCFMonitorService obj="Localsystem"
