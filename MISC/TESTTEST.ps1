@@ -1,0 +1,1 @@
+Get-ChildItem C:\Temp\Test\ | Where-Object LastWriteTime -lt ((Get-Date).adddays(-30)) | Move-item -Destination "C:\temp\test\DELETE_ME"  # Remove-Item -force

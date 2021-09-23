@@ -187,7 +187,7 @@ New-GPO -Name StandardUserSettings -comment "For standard users mainly for backg
 New-GPO -Name RemoteDesktop -comment "For Remote Desktop users"
 
 
-New-GPLink -Name "StandardUserSettings"        -Target "OU=CloudUsers,dc=cloud,dc=Cloud" -LinkEnabled Yes
+New-GPLink -Name "StandardUserSettings"        -Target "OU=CloudUsers,dc=cloud,dc=local" -LinkEnabled Yes
 New-GPLink -Name "RemoteDesktop"  -Target "DC=cloud,DC=Cloud" -LinkEnabled Yes
 
 
