@@ -7,7 +7,7 @@
     This will change login type and restart for QuickBooks Services and move junk files out of normal startup. 
   
   .NOTES
-    Version:        1.0
+    Version:        1.2
     Author:         Mike Ryan   
     Creation Date:  08/10/21
     Purpose/Change: To run this right after a QuickBook install
@@ -21,9 +21,11 @@ Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\AdminScripts C:
 net use /delete \\noobehnas.file.core.windows.net\cloudnas
 }
 Function Set-NTFSsecurity{
-    
- 
-  ## Blow out and remove all File INHERITANCE########################
+<# 
+  .DESCRIPTION
+   Make sure the Qbooks folder has SYSTEM with modify rights for the QBdatabase.
+#>
+   ## Blow out and remove all File INHERITANCE########################
 $folder = 'F:\DATA\appsData\Qbooks'
 $acl = Get-ACL -Path $folder
 $acl.SetAccessRuleProtection($True, $False) #remote inheritance & remove users
@@ -89,7 +91,10 @@ Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
 }
 
 Function Set-ScheduledQuickBooksCheck{ 
-
+<# 
+  .DESCRIPTION
+  Setup a schedule for all users logoning in to start the QBdatabase if it is not running.
+#>
   Function New-ScheduledTaskFolder
 
   {
@@ -119,7 +124,10 @@ Enable-ScheduledTask -TaskName CheckQBStatus  -TaskPath "Noobeh"
 }
 
 Function Set-ServerServices{
-    
+<# 
+  .DESCRIPTION
+   Setup QB services so they restart after failure and "Automatic" and "Localsystem" to run under
+#>
 sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/400000/restart/800000 ## Note related to QucikBooks but better health of server restarts
 
 sc.exe failure QBCFMonitorService reset= 86400 actions= restart/60000/restart/60000/restart/60000 
@@ -151,6 +159,10 @@ If ($lastQBService.status -ne "Running" ) #if it is not running, Run it.
  Invoke-expression $runcommand
 }
 Function Move-QBjunk{
+  <# 
+  .DESCRIPTION
+   Clear out the QB junk folder that puts several junk startups.
+#>
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*",     "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -force
 }
 
