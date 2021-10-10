@@ -13,6 +13,12 @@
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
 #>
 
+Function Get-Authenticated{
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+    Connect-AzAccount
+    
+}
 Function Set-DomainController{
 ### Set server as Domain Controller
 if ((gwmi win32_computersystem).partofdomain -eq $False) {
@@ -48,8 +54,13 @@ Exit
 }
 
 Function Set-CopyNoobehFiles{
+    $NASkey = Get-AzKeyVaultSecret -VaultName "guessthenumber" -Name "Cloudnaskey1" -AsPlainText ## get nas key
+    
+ $runCommand =    "net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas $($NASkey)"  #build command
+
     #Open the NoobehNAS
-net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
+  Invoke-Expression $runCommand   #run command
+### net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
 #Copy important files over to the new server
 New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT
 Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\ c:\noobehIT -Recurse -Force
@@ -80,36 +91,6 @@ New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore
 
 }
 Function Set-NTFSsecurity{
-    
- <# Not Needed anymore. This part   #Lets create Everyone rights to fine and modify CoalMine, Just add to the three folders only the rights to CoalMine
-  $FolderPathArray = @('C:\NoobehIT','C:\NoobehIT\ServerSetup') #Ad Everyone to these Folders, so malware can find CoalMine
-  Foreach($FolderPath in $FolderPathArray){ 
-  $ACL = Get-Acl $FolderPath
-  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-      'Everyone', #Identity
-      'Modify', # Rights
-      'None',   #inheritance  None=This folder only Containerinherit=The ACE is inherited by child container objects.
-      'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
-      'Allow')  #type set for everyone modify rights to folder
-  $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
-  Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
-  #########################################################################################endregion
-  }
-  
-  $FolderPathArray = @('C:\NoobehIT\ServerSetup\CoalMine') #Ad Everyone & subcontains to these Folders, so malware can find CoalMine
-  Foreach($FolderPath in $FolderPathArray){ 
-  $ACL = Get-Acl $FolderPath
-  $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-      'Everyone', #Identity
-      'Modify', # Rights
-      'ObjectInherit, ContainerInherit',  #inheritance  This folder only - None
-      'None',   #propagation  NoPropagateInherit (the ACE is not propagated to any current child objects)
-      'Allow')  #type set for everyone modify rights to folder
-  $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
-  Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
-  #########################################################################################endregion
-  }
-  #>
  
   ### Lets create security settings for the DATA folder on the F: drive
   ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
@@ -327,16 +308,20 @@ New-ScheduledTaskFolder Noobeh
 
 
 ###  Start ENTRY POINT Main  ### 
-#If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
 Set-DomainController
+#If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
+Get-Authenticated
 Set-CopyNoobehFiles
 Set-DATAHarddrive
+##set-torestartafterboot ##run automaticly after a reboot
 Set-GPOsettings
 Set-NTFSsecurity
 Set-Office365Install
 Set-SoftwareInstall
 Set-Misc
 Set-ShadowCopy
+#stop-torestartafterboot ## to show this program should not run again.
+
 
 #--------------------------------------------------------------end------------------------------------------------
 
