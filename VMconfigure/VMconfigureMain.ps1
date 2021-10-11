@@ -14,7 +14,7 @@
 #>
 
 
-function Disable-InternetExplorerESC {
+function Disable-InternetExplorerESC {  # This needs to be turn off so you can sign into Azure
     $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
     $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
     Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
@@ -27,6 +27,8 @@ function Disable-InternetExplorerESC {
  
  
 Function Set-PowerShellUp{
+
+    #Just a few prerequisite for logging into Azure.
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope MachinePolicy
     Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
     
@@ -318,25 +320,34 @@ New-ScheduledTaskFolder Noobeh
 
 ### END ShadowCopy configuration ###
 }
+Function Set-ENDlog{
+## end log file
+New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
 
+}
 
 
 ###  Start ENTRY POINT Main  ### 
 Set-DomainController
 #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
-Disable-InternetExplorerESC
-Set-PowerShellUp
-Set-CopyNoobehFiles
-Set-DATAHarddrive
+$IsFileThere = test-path -path C:\NoobehIT\ServerSetup\MISCsoftware\end.log -PathType Leaf
+If ($IsFileThere) {
+Write-Host "This script has already run. END"
+}else {  #Now run the many parts
+    Disable-InternetExplorerESC
+    Set-PowerShellUp
+    Set-CopyNoobehFiles
+    Set-DATAHarddrive
 ##set-torestartafterboot ##run automaticly after a reboot
-Set-GPOsettings
-Set-NTFSsecurity
-Set-Office365Install
-Set-SoftwareInstall
-Set-Misc
-Set-ShadowCopy
+    Set-GPOsettings
+    Set-NTFSsecurity
+    Set-Office365Install
+    Set-SoftwareInstall
+    Set-Misc
+    Set-ShadowCopy
+    Set-ENDlog
 #stop-torestartafterboot ## to show this program should not run again.
-
+}
 
 #--------------------------------------------------------------end------------------------------------------------
 
