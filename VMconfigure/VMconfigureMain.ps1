@@ -13,10 +13,23 @@
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
 #>
 
-Function Get-Authenticated{
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+function Disable-InternetExplorerESC {
+    $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
+    $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
+    Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
+    Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force
+    Rundll32 iesetup.dll, IEHardenLMSettings
+    Rundll32 iesetup.dll, IEHardenUser
+    Rundll32 iesetup.dll, IEHardenAdmin
+    Write-Host "IE Enhanced Security Configuration (ESC) has been disabled."
+ }
+ 
+ 
+Function Set-PowerShellUp{
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope MachinePolicy
     Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
-    Connect-AzAccount
+    
     
 }
 Function Set-DomainController{
@@ -54,6 +67,7 @@ Exit
 }
 
 Function Set-CopyNoobehFiles{
+    Connect-AzAccount  #log into azure so you can get access to secret keys
     $NASkey = Get-AzKeyVaultSecret -VaultName "guessthenumber" -Name "Cloudnaskey1" -AsPlainText ## get nas key
     
  $runCommand =    "net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas $($NASkey)"  #build command
@@ -310,7 +324,8 @@ New-ScheduledTaskFolder Noobeh
 ###  Start ENTRY POINT Main  ### 
 Set-DomainController
 #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
-Get-Authenticated
+Disable-InternetExplorerESC
+Set-PowerShellUp
 Set-CopyNoobehFiles
 Set-DATAHarddrive
 ##set-torestartafterboot ##run automaticly after a reboot
