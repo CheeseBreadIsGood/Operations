@@ -7,13 +7,39 @@
     This will install some software configure external hard drive and create a default domain controller 
   
   .NOTES
-    Version:        1.0
+    Version:        1.1.220101
     Author:         Mike Ryan   
     Creation Date:  05/1/20
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
 #>
 
 
+
+function Set-RebootRunSched {
+  Function New-scheduledTaskFolder # lot of work just to create a folder for sched
+  {
+
+    Param ($taskpath)
+    $ErrorActionPreference = "stop"
+    $scheduleObject = New-Object -ComObject schedule.service
+    $scheduleObject.connect()
+    $rootFolder = $scheduleObject.GetFolder("\")
+       Try {$null = $scheduleObject.GetFolder($taskpath)}
+       Catch { $null = $rootFolder.CreateFolder($taskpath) }
+       Finally { $ErrorActionPreference = "continue" }
+   }
+  
+## Create folder
+New-ScheduledTaskFolder Noobeh{
+   #Set 
+   $Action=new-scheduledtaskaction -execute Powershell.exe -Argument C:\NoobehIT\ServerSetup\AdminScripts\CreateLogfile.ps1
+   $Trigger=new-scheduledtasktrigger -AtStartup
+   
+   $TaskPrincipal=New-ScheduledTaskPrincipal -User system -RunLevel Highest -LogonType S4U
+
+   Register-ScheduledTask -TaskName RunonceAfterReboot -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "Run after reboot" -TaskPath "Noobeh"
+
+}
 function Disable-InternetExplorerESC {  # This needs to be turn off so you can sign into Azure
     $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
     $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
@@ -25,46 +51,24 @@ function Disable-InternetExplorerESC {  # This needs to be turn off so you can s
     Write-Host "IE Enhanced Security Configuration (ESC) has been disabled."
  }
  
- 
-Function Set-PowerShellUp{
+ Function Set-PowerShellUp{
 
     #Just a few prerequisite for logging into Azure.
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope MachinePolicy
-    Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
-    
-    
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+    Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
+    Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force   
 }
-Function Set-DomainController{
-### Set server as Domain Controller
-if ((gwmi win32_computersystem).partofdomain -eq $False) {
-
-$PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
-Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
-Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
-
-#Set time zone et
-Set-TimeZone "Eastern Standard Time"
-
+Function Set-DomainController{  ######-------------- Set server as Domain Controller -------------#########
+if ((gwmi win32_computersystem).partofdomain -eq $False) {  # Only run if this is not a domain controller yet
 ### Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
-### Restart-computer -force
-
-
-
- 
-set-executionpolicy remotesigned -force
-
-## Set server as Domain Controller
 $PS =  ConvertTo-SecureString -string 'ThisIsVeryLong123^^' -AsPlainText -Force
 ##import-module servermanager
-
 Install-WindowsFeature -name AD-domain-Services -IncludeManagementTools
 Install-ADDSForest -DomainName Cloud.local -InstallDNS -SafeModeAdministratorPassword $PS -force
 
 #Set time zone et
 Set-TimeZone "Eastern Standard Time"
 ##Add-WindowsFeature RDS-RD-Server, RDS-Connection-Broker, RDS-Web-Access
-Restart-computer -force
-Exit 
 }
 }
 
@@ -92,19 +96,11 @@ Function Set-DATAHarddrive{
 Get-Disk | Where-Object PartitionStyle –Eq "RAW"| Initialize-Disk -PartitionStyle GPT   
 Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False      
 #########################################################################################
-
-
-## Not needed      New-Item -Path 'F:\DATA\' -ItemType Directory -ErrorAction Ignore 
-
-
-
 ###Now create the sub folders to this seconddary hard drive
 New-Item -Path 'F:\DATA\AppsData' -ItemType Directory  -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\AppsData\Qbooks' -ItemType Directory  -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\AppsInstallers' -ItemType Directory -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore 
-
-
 }
 Function Set-NTFSsecurity{
  
@@ -207,12 +203,7 @@ Invoke-Command {gpupdate /force}
 #=====================END GPO=============================================================
 }
 Function Set-Office365Install{
-###############################
-#DNS forwarders
-$ipss = ("156.154.70.4", "156.154.71.4")
-Set-DnsServerForwarder -IPAddress $ipss -PassThru
 
-###############
 Write-Output "Installing office365 DOWNLOAD"
 Set-Location -Path C:\NoobehIT\ServerSetup\OfficeInstall
 $cmd = @"
@@ -240,10 +231,14 @@ Choco install GoogleChrome, adobereader, windirstat -y
 Choco install Microsoft-edge -y
 
 choco install git.install --params "/GitOnlyOnPath /NoGitLfs /NoShellIntegration /SChannel /NoAutoCrlf" --force -y
- & "C:\Program Files\Git\bin\git.exe" clone https://github.com/CheeseBreadIsGood/AzureVM.git
- Install-Module -Name Az -AllowClobber -Scope CurrentUser -force
+ & "C:\Program Files\Git\bin\git.exe" clone https://github.com/CheeseBreadIsGood/AzureVM.git ##THIS LINE DOES NOT WORK
+ ##Install-Module -Name Az -AllowClobber -Scope CurrentUser -force
 }
 Function Set-Misc{
+
+  #DNS forwarders
+$ipss = ("156.154.70.4", "156.154.71.4")
+Set-DnsServerForwarder -IPAddress $ipss -PassThru
 #### memory compression
 ##### Server 2019 Memory Compression/PageCombining
 
@@ -257,7 +252,7 @@ get-mmagent
 Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
 
-sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000 #60,000 is 1 minute. This is to fix the 1 in 100 server restarts. This service does not start and users can't log into their server
+& "sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000" #THIS LINE DOES NOT WORK #60,000 is 1 minute. This is to fix the 1 in 100 server restarts. This service does not start and users can't log into their server
 }
 Function Set-ShadowCopy{
 ####################Start Shadow Copy####
@@ -286,69 +281,84 @@ New-ScheduledTaskFolder Noobeh
     #Create Shadows
     vssadmin create shadow /for=C:
     vssadmin create shadow /for=F:
+    #make sure they all run as SYSTEM and not ServerAdmin
+    $TaskPrincipal=New-ScheduledTaskPrincipal -User system -RunLevel Highest -LogonType S4U
 
     #Set Shadow Copy Scheduled Task for C: AM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=C:"
     $Trigger=new-scheduledtasktrigger -daily -at 10:30AM
-    Register-ScheduledTask -TaskName ShadowCopyC_AM -Trigger $Trigger -Action $Action -Description "ShadowCopyC_AM" -TaskPath "Noobeh"
+
+    Register-ScheduledTask -TaskName ShadowCopyC_AM -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "ShadowCopyC_AM" -TaskPath "Noobeh"
 
     #Set Shadow Copy Scheduled Task for C: PM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=C:"
     $Trigger=new-scheduledtasktrigger -daily -at 2:30PM
-    Register-ScheduledTask -TaskName ShadowCopyC_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyC_PM" -TaskPath "Noobeh"
+    Register-ScheduledTask -TaskName ShadowCopyC_PM -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "ShadowCopyC_PM" -TaskPath "Noobeh"
     
         #Set Shadow Copy Scheduled Task for C: PM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=C:"
-    $Trigger=new-scheduledtasktrigger -daily -at 11:30PM
-    Register-ScheduledTask -TaskName ShadowCopyC_Late_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyC_Late_PM" -TaskPath "Noobeh"
+    $Trigger=new-scheduledtasktrigger -daily -at 5:30PM
+    Register-ScheduledTask -TaskName ShadowCopyC_Late_PM -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "ShadowCopyC_Late_PM" -TaskPath "Noobeh"
 
 ###
     #Set Shadow Copy Scheduled Task for F: AM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=F:"
     $Trigger=new-scheduledtasktrigger -daily -at 10:45AM
-    Register-ScheduledTask -TaskName ShadowCopyF_AM -Trigger $Trigger -Action $Action -Description "ShadowCopyF_AM" -TaskPath "Noobeh"
+    Register-ScheduledTask -TaskName ShadowCopyF_AM -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "ShadowCopyF_AM" -TaskPath "Noobeh"
 
     #Set Shadow Copy Scheduled Task for F: PM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=F:"
     $Trigger=new-scheduledtasktrigger -daily -at 2:45PM
-    Register-ScheduledTask -TaskName ShadowCopyF_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyF_PM" -TaskPath "Noobeh"
+    Register-ScheduledTask -TaskName ShadowCopyF_PM -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "ShadowCopyF_PM" -TaskPath "Noobeh"
     
     #Set Shadow Copy Scheduled Task for F: PM
     $Action=new-scheduledtaskaction -execute "c:\windows\system32\vssadmin.exe" -Argument "create shadow /for=F:"
-    $Trigger=new-scheduledtasktrigger -daily -at 11:45PM
-    Register-ScheduledTask -TaskName ShadowCopyF_Late_PM -Trigger $Trigger -Action $Action -Description "ShadowCopyF_Late_PM" -TaskPath "Noobeh"
+    $Trigger=new-scheduledtasktrigger -daily -at 5:45PM
+    Register-ScheduledTask -TaskName ShadowCopyF_Late_PM -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "ShadowCopyF_Late_PM" -TaskPath "Noobeh"
 
 ### END ShadowCopy configuration ###
 }
 Function Set-ENDlog{
+      ### DELETE IT. The run after reboot. We don't need it anymore.
+      Unregister-ScheduledTask -TaskPath "\Noobeh\" -TaskName RunonceAfterReboot -confirm:$false
 ## end log file
 New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
 
 }
 
+Function Set-PreWork{  #do this prework that is needed before the full script, Also make it a Doamin Controller
 
-###  Start ENTRY POINT Main  ### 
-Set-DomainController
-#If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
-$IsFileThere = test-path -path C:\NoobehIT\ServerSetup\MISCsoftware\end.log -PathType Leaf
+  #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
+$IsFileThere = test-path -path C: \NoobehIT\ServerSetup\MISCsoftware\end.log -PathType Leaf
 If ($IsFileThere) {
-Write-Host "This script has already run. END"
-}else {  #Now run the many parts
-    Disable-InternetExplorerESC
-    Set-PowerShellUp
-    Set-CopyNoobehFiles
-    Set-DATAHarddrive
+                   Write-Host "This script has already run. END"
+                  }else {  #Now run the many parts
+                         Disable-InternetExplorerESC
+                         Set-PowerShellUp
+                         Set-CopyNoobehFiles  #Have admin log in and start copying IT files to C: drive
+                         Set-DATAHarddrive #setup attached F: drive
+                         Set-Office365Install ## 64-bit Office
+                         Set-ShadowCopy 
+                         Set-DomainController  ##now make domain controller  and reboot
+                        }
+}
+##################################
+###  Start ENTRY POINT Main  ### 
+##################################
+    Set-PreWork
+  
+    
 ##set-torestartafterboot ##run automaticly after a reboot
     Set-GPOsettings
     Set-NTFSsecurity
-    Set-Office365Install
+    
     Set-SoftwareInstall
     Set-Misc
-    Set-ShadowCopy
-    Set-ENDlog
+    
+ ##   Set-ENDlog
 #stop-torestartafterboot ## to show this program should not run again.
-}
 
+}
 #--------------------------------------------------------------end------------------------------------------------
 
 
