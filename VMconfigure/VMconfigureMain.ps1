@@ -220,7 +220,7 @@ $cmd = @"
 Function Set-SoftwareInstall{
 C:\NoobehIT\ServerSetup\MISCsoftware\OneDriveServer\onedrivesetup.exe /allusers /force /silent
 #Chocolety  ###############################
-Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
+## DELETE_ME Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
 #PowerShellv5
 #Install-Module PowerShellGet -Allow Clobber
 
@@ -228,32 +228,13 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object
 choco feature enable -n allowGlobalConfirmation
 Choco install GoogleChrome, adobereader, windirstat -y
 
-Choco install Microsoft-edge -y
+## DELETE_ME Choco install Microsoft-edge -y
 
 choco install git.install --params "/GitOnlyOnPath /NoGitLfs /NoShellIntegration /SChannel /NoAutoCrlf" --force -y
  & "C:\Program Files\Git\bin\git.exe" clone https://github.com/CheeseBreadIsGood/AzureVM.git ##THIS LINE DOES NOT WORK
  ##Install-Module -Name Az -AllowClobber -Scope CurrentUser -force
 }
-Function Set-Misc{
 
-  #DNS forwarders
-$ipss = ("156.154.70.4", "156.154.71.4")
-Set-DnsServerForwarder -IPAddress $ipss -PassThru
-#### memory compression
-##### Server 2019 Memory Compression/PageCombining
-
-Enable-MMAgent -MemoryCompression
-Enable-MMAgent -PageCombining
-Enable-MMAgent -ApplicationLaunchPrefetching
-## Enabel-MMAgent -ApplicationPreLaunch
-get-mmagent
-
-##setup windows search to auto start up
-Set-service -name WSearch -StartupType Automatic
-start-service -name Wsearch
-
-& "sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/60000/restart/60000" #THIS LINE DOES NOT WORK #60,000 is 1 minute. This is to fix the 1 in 100 server restarts. This service does not start and users can't log into their server
-}
 Function Set-ShadowCopy{
 ####################Start Shadow Copy####
 
@@ -326,6 +307,25 @@ New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
 
 }
 
+Function Set-Misc{
+
+  #DNS forwarders
+$ipss = ("156.154.70.4", "156.154.71.4")
+Set-DnsServerForwarder -IPAddress $ipss -PassThru
+#### memory compression
+##### Server 2019 Memory Compression/PageCombining
+
+Enable-MMAgent -MemoryCompression
+Enable-MMAgent -PageCombining
+Enable-MMAgent -ApplicationLaunchPrefetching
+## Enabel-MMAgent -ApplicationPreLaunch
+get-mmagent
+
+##setup windows search to auto start up
+Set-service -name WSearch -StartupType Automatic
+start-service -name Wsearch
+
+}
 Function Set-PreWork{  #do this prework that is needed before the full script, Also make it a Doamin Controller
 
   #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
@@ -336,8 +336,7 @@ If ($IsFileThere) {
                          Disable-InternetExplorerESC
                          Set-PowerShellUp
                          Set-CopyNoobehFiles  #Have admin log in and start copying IT files to C: drive
-                         Set-DATAHarddrive #setup attached F: drive
-                         Set-Office365Install ## 64-bit Office
+                         Set-DATAHarddrive #setup attached F: drive                      
                          Set-ShadowCopy 
                          Set-DomainController  ##now make domain controller  and reboot
                         }
@@ -349,9 +348,9 @@ If ($IsFileThere) {
   
     
 ##set-torestartafterboot ##run automaticly after a reboot
+    Set-Office365Install ## 64-bit Office
     Set-GPOsettings
     Set-NTFSsecurity
-    
     Set-SoftwareInstall
     Set-Misc
     
