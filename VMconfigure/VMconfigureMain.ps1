@@ -12,10 +12,7 @@
     Creation Date:  05/1/20
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
 #>
-
-
-
-function Set-RebootRunSched {
+function Set-RebootRunSched { #---------------------------------------------------------------------
   Function New-scheduledTaskFolder # lot of work just to create a folder for sched
   {
 
@@ -30,7 +27,7 @@ function Set-RebootRunSched {
    }
   
 ## Create folder
-New-ScheduledTaskFolder Noobeh{
+New-ScheduledTaskFolder Noobeh{ #---------------------------------------------------------------------
    #Set 
    $Action=new-scheduledtaskaction -execute Powershell.exe -Argument C:\NoobehIT\ServerSetup\AdminScripts\CreateLogfile.ps1
    $Trigger=new-scheduledtasktrigger -AtStartup
@@ -40,7 +37,8 @@ New-ScheduledTaskFolder Noobeh{
    Register-ScheduledTask -TaskName RunonceAfterReboot -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "Run after reboot" -TaskPath "Noobeh"
 
 }
-function Disable-InternetExplorerESC {  # This needs to be turn off so you can sign into Azure
+function Disable-InternetExplorerESC {   #---------------------------------------------------------------------
+  # This needs to be turn off so you can sign into Azure
     $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
     $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
     Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
@@ -51,7 +49,7 @@ function Disable-InternetExplorerESC {  # This needs to be turn off so you can s
     Write-Host "IE Enhanced Security Configuration (ESC) has been disabled."
  }
  
- Function Set-PowerShellUp{
+ Function Set-PowerShellUp{ #---------------------------------------------------------------------
 
     #Just a few prerequisite for logging into Azure.
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
@@ -72,7 +70,7 @@ Set-TimeZone "Eastern Standard Time"
 }
 }
 
-Function Set-CopyNoobehFiles{
+Function Set-CopyNoobehFiles{ #---------------------------------------------------------------------
     Connect-AzAccount  #log into azure so you can get access to secret keys
     $NASkey = Get-AzKeyVaultSecret -VaultName "guessthenumber" -Name "Cloudnaskey1" -AsPlainText ## get nas key
     
@@ -88,7 +86,7 @@ Copy-Item C:\NoobehIT\ServerSetup\Bginfo\BginfoSetting* "C:\Users\ServerAdmin\Ap
 Copy-Item "C:\NoobehIT\ServerSetup\Graphics\Log Off Noobeh.lnk" "C:\Users\Public\Desktop\"
 net use /delete \\noobehnas.file.core.windows.net\cloudnas
 }
-Function Set-DATAHarddrive{
+Function Set-DATAHarddrive{ #---------------------------------------------------------------------
     ## Format attached new Drive to Letter F:
 #Bring data disks online and initialize them
 #################### PowerShell Configure New Server with external hard drive ###########
@@ -102,7 +100,7 @@ New-Item -Path 'F:\DATA\AppsData\Qbooks' -ItemType Directory  -ErrorAction Ignor
 New-Item -Path 'F:\DATA\AppsInstallers' -ItemType Directory -ErrorAction Ignore 
 New-Item -Path 'F:\DATA\SharedData' -ItemType Directory -ErrorAction Ignore 
 }
-Function Set-NTFSsecurity{
+Function Set-NTFSsecurity{ #---------------------------------------------------------------------
  
   ### Lets create security settings for the DATA folder on the F: drive
   ##### Start Creating folder and security for DATA folder on the F: drive (FAST drive)  ###################
@@ -171,7 +169,7 @@ Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   
     
   }
-Function Set-GPOsettings{
+Function Set-GPOsettings{ #---------------------------------------------------------------------
  ############     GPO     ############
 
 New-ADOrganizationalUnit -Name "CloudUsers" -Description "Client Users"
@@ -235,7 +233,7 @@ choco install git.install --params "/GitOnlyOnPath /NoGitLfs /NoShellIntegration
  ##Install-Module -Name Az -AllowClobber -Scope CurrentUser -force
 }
 
-Function Set-ShadowCopy{
+Function Set-ShadowCopy{ #---------------------------------------------------------------------
 ####################Start Shadow Copy####
 
    Function New-ScheduledTaskFolder
@@ -299,7 +297,7 @@ New-ScheduledTaskFolder Noobeh
 
 ### END ShadowCopy configuration ###
 }
-Function Set-ENDlog{
+Function Set-ENDlog{ #---------------------------------------------------------------------
       ### DELETE IT. The run after reboot. We don't need it anymore.
       Unregister-ScheduledTask -TaskPath "\Noobeh\" -TaskName RunonceAfterReboot -confirm:$false
 ## end log file
@@ -307,7 +305,7 @@ New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
 
 }
 
-Function Set-Misc{
+Function Set-Misc{ #---------------------------------------------------------------------
 
   #DNS forwarders
 $ipss = ("156.154.70.4", "156.154.71.4")
@@ -326,7 +324,10 @@ Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
 
 }
-Function Set-PreWork{  #do this prework that is needed before the full script, Also make it a Doamin Controller
+Function Set-PreWork{  #---------------------------------------------------------------------
+ # Discription:
+ 
+ #do this prework that is needed before the full script, Also make it a Doamin Controller then reboot for the second part of the script
 
   #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
 $IsFileThere = test-path -path C: \NoobehIT\ServerSetup\MISCsoftware\end.log -PathType Leaf
@@ -344,9 +345,7 @@ If ($IsFileThere) {
 ##################################
 ###  Start ENTRY POINT Main  ### 
 ##################################
-    Set-PreWork
-  
-    
+    Set-PreWork 
 ##set-torestartafterboot ##run automaticly after a reboot
     Set-Office365Install ## 64-bit Office
     Set-GPOsettings
