@@ -169,9 +169,8 @@ Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Qu
 
 ## functions to finish
 
-Get-NoobehData  #get new scripts from nas to local system
+#Not needed Get-NoobehData  #get new scripts from nas to local system
 Set-NTFSsecurity ## add local system NTFS security to folders
 Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
-
 Set-ServerServices ## for QuickBooks services to automatic 
 Move-QBjunk ##QuickBooks extra autostart crap. Removed.
