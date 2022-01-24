@@ -165,10 +165,7 @@ $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
     'Allow')  #type set for this rule "Allow' Or 'Deny'
 $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, but it is not set back onto the system yet.
 Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
-
   ### END adding security for USERS and Admins #>
-  
-    
   }
 Function Set-GPOsettings{ #---------------------------------------------------------------------
  ############     GPO     ############
@@ -252,7 +249,7 @@ Function Set-ShadowCopy{ #------------------------------------------------------
     }
    
 ## Create folder
-New-ScheduledTaskFolder Noobeh
+New-ScheduledTaskFolder Noobeh  #create folder if not already there
    
    #Enable Shadows
     vssadmin add shadowstorage /for=C: /on=C:  /maxsize=8128MB
@@ -317,18 +314,37 @@ Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
 
 }
-Function Set-ENDlog{ #---------------------------------------------------------------------
+<#Function Set-ENDlog {
+  #---------------------------------------------------------------------
   ### DELETE IT. The run after reboot. We don't need it anymore.
   Unregister-ScheduledTask -TaskPath "\Noobeh\" -TaskName RunonceAfterReboot -confirm:$false
-## end log file
-New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
+  ## end log file
+  New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
 
 }
+#>
+
+Function New-TaskLog{
+  param(
+    [Parameter (Mandatory = $true)] [String]$LogName
+    )
+    New-Item "C:\NoobehIT\ServerSetup\MISCsoftware\$logName.log"
+
+}
+Function Confirm-Tasklog{
+ #returns true if the named log file is there
+  param(
+    [Parameter (Mandatory = $true)] [String]$LogName
+    )
+    $IsFileThere = test-path -path "C:\NoobehIT\ServerSetup\MISCsoftware\$logName.log" -PathType Leaf
+    If ($IsFileThere) {
+      Write-Host "------LOGFILE->$LogName.log<- is already there. END"
+      }
+    Return $IsFileThere
+  }
 Function Set-PreWork{  #---------------------------------------------------------------------
  # Discription:
- 
- #do this prework that is needed before the full script, Also make it a Doamin Controller then reboot for the second part of the script
-
+  #do this prework that is needed before the full script, Also make it a Doamin Controller then reboot for the second part of the script
   #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
 $IsFileThere = test-path -path C:\NoobehIT\ServerSetup\MISCsoftware\end.log -PathType Leaf
 If ($IsFileThere) {
@@ -340,23 +356,34 @@ If ($IsFileThere) {
                          Set-DATAHarddrive #setup attached F: drive                      
                          Set-ShadowCopy 
                          Set-RebootRunSched  #after first run set it to run once after reboot
-                         Set-ENDlog  #make sure these functions don't run again
+                         New-TaskLog(PreLog) #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
                         }
 }
+Function Set-PostWork{  #---------------------------------------------------------------------
+  # Discription:
+  
+  #do this after the domain controller is created and rebooted.
+  #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
+
+##set-torestartafterboot ##run automaticly after a reboot
+If ( -not (Confirm-Tasklog -LogName hellotest2))
+   {
+   Set-Office365Install ## 64-bit Office
+   Set-GPOsettings
+   Set-NTFSsecurity
+   Set-SoftwareInstall
+   Set-Misc
+   Unregister-ScheduledTask -TaskName "RunonceAfterReboot"
+   Set-TaskLog(PostLog)
+#stop-torestartafterboot ## to show this program should not run again.
+   }
 ##################################
 ###  Start ENTRY POINT Main  ### 
 ##################################
     Set-PreWork 
-##set-torestartafterboot ##run automaticly after a reboot
-    Set-Office365Install ## 64-bit Office
-    Set-GPOsettings
-    Set-NTFSsecurity
-    Set-SoftwareInstall
-    Set-Misc
-    
-    
-#stop-torestartafterboot ## to show this program should not run again.
+    Set-PostWork
+
 #--------------------------------------------------------------end------------------------------------------------
 
 
