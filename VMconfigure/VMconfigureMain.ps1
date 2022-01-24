@@ -29,7 +29,7 @@ function Set-RebootRunSched { #-------------------------------------------------
     ## Create folder
    New-ScheduledTaskFolder Noobeh #call the function to create subfolder Noobeh in tasks
    #Set 
-   $Action=new-scheduledtaskaction -execute Powershell.exe -Argument C:\NoobehIT\ServerSetup\AdminScripts\CreateLogfile.ps1
+   $Action=new-scheduledtaskaction -execute Powershell.exe -Argument C:\NoobehIT\ServerSetup\AdminScripts\VMconfigureMain.ps1
    $Trigger=new-scheduledtasktrigger -AtStartup
    
    $TaskPrincipal=New-ScheduledTaskPrincipal -User system -RunLevel Highest -LogonType S4U
@@ -314,19 +314,9 @@ Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
 
 }
-<#Function Set-ENDlog {
-  #---------------------------------------------------------------------
-  ### DELETE IT. The run after reboot. We don't need it anymore.
-  Unregister-ScheduledTask -TaskPath "\Noobeh\" -TaskName RunonceAfterReboot -confirm:$false
-  ## end log file
-  New-Item C:\NoobehIT\ServerSetup\MISCsoftware\End.log
-
-}
-#>
-
-Function New-TaskLog{
+Function Set-TaskLog{
   param(
-    [Parameter (Mandatory = $true)] [String]$LogName
+    [Parameter (Mandatory = $false)] [String]$LogName
     )
     New-Item "C:\NoobehIT\ServerSetup\MISCsoftware\$logName.log"
 
@@ -346,17 +336,15 @@ Function Set-PreWork{  #--------------------------------------------------------
  # Discription:
   #do this prework that is needed before the full script, Also make it a Doamin Controller then reboot for the second part of the script
   #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
-$IsFileThere = test-path -path C:\NoobehIT\ServerSetup\MISCsoftware\end.log -PathType Leaf
-If ($IsFileThere) {
-                   Write-Host "-------------This script has already run. END"
-                  }else {  #Now run the many parts
+  If ( -not (Confirm-Tasklog -LogName Prelog))
+                        {  #Now run the many parts
                          Disable-InternetExplorerESC
                          Set-PowerShellUp
                          Set-CopyNoobehFiles  #Have admin log in and start copying IT files to C: drive
                          Set-DATAHarddrive #setup attached F: drive                      
                          Set-ShadowCopy 
                          Set-RebootRunSched  #after first run set it to run once after reboot
-                         New-TaskLog(PreLog) #make sure these functions don't run again
+                         Set-TaskLog(PreLog) #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
                         }
 }
@@ -367,17 +355,18 @@ Function Set-PostWork{  #-------------------------------------------------------
   #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
 
 ##set-torestartafterboot ##run automaticly after a reboot
-If ( -not (Confirm-Tasklog -LogName hellotest2))
+If ( -not (Confirm-Tasklog -LogName PostLog))
    {
    Set-Office365Install ## 64-bit Office
    Set-GPOsettings
    Set-NTFSsecurity
    Set-SoftwareInstall
    Set-Misc
-   Unregister-ScheduledTask -TaskName "RunonceAfterReboot"
+   Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
    Set-TaskLog(PostLog)
 #stop-torestartafterboot ## to show this program should not run again.
    }
+  }
 ##################################
 ###  Start ENTRY POINT Main  ### 
 ##################################
