@@ -344,7 +344,7 @@ Function Set-PreWork{  #--------------------------------------------------------
                          Set-DATAHarddrive #setup attached F: drive                      
                          Set-ShadowCopy 
                          Set-RebootRunSched  #after first run set it to run once after reboot
-                         Set-TaskLog(PreLog) #make sure these functions don't run again
+                         Set-TaskLog -LogName PreLog #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
                         }
 }
@@ -363,7 +363,7 @@ If ( -not (Confirm-Tasklog -LogName PostLog))
    Set-SoftwareInstall
    Set-Misc
    Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
-   Set-TaskLog(PostLog)
+   Set-TaskLog -LogName PostLog
 #stop-torestartafterboot ## to show this program should not run again.
    }
   }
