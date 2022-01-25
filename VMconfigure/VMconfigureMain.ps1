@@ -347,33 +347,26 @@ Function Set-PreWork{  #--------------------------------------------------------
                          Set-TaskLog -LogName PreLog #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
                         }
-}
+} #End Function Set-PreWork
 Function Set-PostWork{  #---------------------------------------------------------------------
-  # Discription:
-  
   #do this after the domain controller is created and rebooted.
-  #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
-
-##set-torestartafterboot ##run automaticly after a reboot
 If ( -not (Confirm-Tasklog -LogName PostLog))
    {
-   Set-Office365Install ## 64-bit Office
    Set-GPOsettings
    Set-NTFSsecurity
    Set-SoftwareInstall
    Set-Misc
    Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
    Set-TaskLog -LogName PostLog
-#stop-torestartafterboot ## to show this program should not run again.
+   Set-Office365Install ## 64-bit Office
    }
-  }
+  }  #end function Set-PostWork
 ##################################
 ###  Start ENTRY POINT Main  ### 
 ##################################
     Set-PreWork 
     Set-PostWork
-
-#--------------------------------------------------------------end------------------------------------------------
+##### end #####
 
 
 
