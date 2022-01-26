@@ -353,9 +353,9 @@ Function Set-PostWork{  #-------------------------------------------------------
 If ( -not (Confirm-Tasklog -LogName PostLog))
    {
    Set-GPOsettings
+   Set-Misc
    Set-NTFSsecurity
    Set-SoftwareInstall
-   Set-Misc
    Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
    Set-TaskLog -LogName PostLog
    Set-Office365Install ## 64-bit Office
