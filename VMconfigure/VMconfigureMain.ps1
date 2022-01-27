@@ -353,7 +353,9 @@ Function Set-PostWork{  #-------------------------------------------------------
 If ( -not (Confirm-Tasklog -LogName PostLog))
    {
    Set-GPOsettings
+   Start-Sleep 120
    Set-Misc
+   Start-sleep 120
    Set-NTFSsecurity
    Set-SoftwareInstall
    Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
