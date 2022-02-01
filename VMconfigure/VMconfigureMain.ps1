@@ -183,7 +183,7 @@ New-GPLink -Name "RemoteDesktop"  -Target "DC=cloud,DC=local" -LinkEnabled Yes
  ##NOW SET--StandardUserSettings
 Set-GPRegistryValue -Name "StandardUserSettings" -Key "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" -ValueName Wallpaper,WallPaperStyle -Type String -Value "C:\NoobehIT\ServerSetup\Graphics\Backgroundlogo.png",0
 Set-GPRegistryValue -Name "StandardUserSettings" -Key "HKCU\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services"  -ValueName  MaxIdleTime -Type Dword  -Value 10800000
-Set-GPRegistryValue -Name "StandardUserSettings" -Key "HKCU\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services"  -ValueName MaxDisconnectionTime -Type Dword  -Value 60000
+Set-GPRegistryValue -Name "StandardUserSettings" -Key "HKCU\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services"  -ValueName MaxDisconnectionTime -Type Dword  -Value 300000
 
 
 ##NOW SET --RemoteDesktop
@@ -370,5 +370,6 @@ If ( -not (Confirm-Tasklog -LogName PostLog))
     Set-PostWork
 ##### end #####
 
-
+##Import-Module RemoteDesktop
+##Set-RDSessionCollectionConfiguration -CollectionName QuickSessionCollection -CustomRdpProperty "gatewayhostname:s:remote.domainname.com:4441"
 
