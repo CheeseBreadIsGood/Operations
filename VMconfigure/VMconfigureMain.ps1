@@ -343,7 +343,7 @@ Function Set-PreWork{  #--------------------------------------------------------
                          Set-CopyNoobehFiles  #Have admin log in and start copying IT files to C: drive
                          Set-DATAHarddrive #setup attached F: drive                      
                          Set-ShadowCopy 
-                         Set-RebootRunSched  #after first run set it to run once after reboot
+                         #Set-RebootRunSched  #after first run set it to run once after reboot
                          Set-TaskLog -LogName PreLog #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
                         }
@@ -352,13 +352,10 @@ Function Set-PostWork{  #-------------------------------------------------------
   #do this after the domain controller is created and rebooted.
 If ( -not (Confirm-Tasklog -LogName PostLog))
    {
-    Start-sleep 120
+   
    Set-GPOsettings
-   Start-Sleep 120
    Set-Misc
-   Start-sleep 120
    Set-NTFSsecurity
-   Start-sleep 120
    Set-SoftwareInstall
    Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
    Set-TaskLog -LogName PostLog
