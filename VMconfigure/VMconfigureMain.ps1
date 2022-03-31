@@ -342,7 +342,6 @@ Function Set-PreWork{  #--------------------------------------------------------
                          Set-PowerShellUp
                          Set-CopyNoobehFiles  #Have admin log in and start copying IT files to C: drive
                          Set-DATAHarddrive #setup attached F: drive                      
-                         Set-ShadowCopy 
                          #Set-RebootRunSched  #after first run set it to run once after reboot
                          Set-TaskLog -LogName PreLog #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
@@ -357,6 +356,7 @@ If ( -not (Confirm-Tasklog -LogName PostLog))
    Set-Misc
    Set-NTFSsecurity
    Set-SoftwareInstall
+   Set-ShadowCopy 
    Unregister-ScheduledTask -TaskName "RunonceAfterReboot" -Confirm:$false #don't let it run again
    Set-TaskLog -LogName PostLog
    Set-Office365Install ## 64-bit Office
