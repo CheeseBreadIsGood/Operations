@@ -54,7 +54,8 @@ function Disable-InternetExplorerESC {   #--------------------------------------
 
     #Just a few prerequisite for logging into Azure.
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
-    Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
+    #Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
+    Install-Module -Name PowerShellGet -Force
     Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force   
 }
 Function Set-DomainController{  ######-------------- Set server as Domain Controller -------------#########
