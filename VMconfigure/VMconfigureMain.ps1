@@ -333,7 +333,7 @@ Function Confirm-Tasklog{
       }
     Return $IsFileThere
   }
-Function Set-PreWork{  #---------------------------------------------------------------------
+Function Set-PreDomainWork{  #---------------------------------------------------------------------
  # Discription:
   #do this prework that is needed before the full script, Also make it a Doamin Controller then reboot for the second part of the script
   #If this is the first run (check log) & it is not a domain/Create log & Create startup task for run again once Then Setup Domain, Then exit out of program
@@ -348,7 +348,7 @@ Function Set-PreWork{  #--------------------------------------------------------
                          Set-DomainController  ##now make domain controller  and reboot
                         }
 } #End Function Set-PreWork
-Function Set-PostWork{  #---------------------------------------------------------------------
+Function Set-PostDomainWork{  #---------------------------------------------------------------------
   #do this after the domain controller is created and rebooted.
 If ( -not (Confirm-Tasklog -LogName PostLog))
    {
@@ -366,8 +366,8 @@ If ( -not (Confirm-Tasklog -LogName PostLog))
 ##################################
 ###  Start ENTRY POINT Main  ### 
 ##################################
-    Set-PreWork 
-    Set-PostWork
+    Set-PreDomainWork 
+    Set-PostDomainWork
 ##### end #####
 
 ##Import-Module RemoteDesktop
