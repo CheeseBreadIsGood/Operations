@@ -1,0 +1,19 @@
+# World's simplest log file maker
+#Creating logoutput and filenames
+$LogFolder = "F:\DATA\SharedData\FTPdata"
+$LogFile = $LogFolder + "\" + (Get-Date -UFormat "%d-%m-%Y") + ".log"
+
+Function Write-Log {
+	param (
+        [Parameter(Mandatory=$True)]
+        [string]$Commenttext
+	)
+	$currentDate = (Get-Date -UFormat "%d-%m-%Y")
+	$currentTime = (Get-Date -UFormat "%T")
+	$logOutput = $logOutput -join (" ")
+	"[$currentDate $currentTime] $logOutput" + "----" + $Commenttext | Out-File F:\DATA\SharedData\FTPdata\hello.log -Append
+}
+
+
+
+write-log "Hello there"
