@@ -1,7 +1,7 @@
 # World's simplest log file maker
 #Creating logoutput and filenames
-$LogFolder = "F:\DATA\SharedData\FTPdata"
-$LogFile = $LogFolder + "\" + (Get-Date -UFormat "%d-%m-%Y") + ".log"
+$LogFolder = "C:\NoobehIT\ServerSetup\AdminScripts\FileMonitorLogs\"
+$LogFile = $LogFolder + "Monitor" + (Get-Date -UFormat "%d-%m-%Y") + ".log"
 
 Function Write-Log {
 	param (
@@ -11,9 +11,9 @@ Function Write-Log {
 	$currentDate = (Get-Date -UFormat "%d-%m-%Y")
 	$currentTime = (Get-Date -UFormat "%T")
 	$logOutput = $logOutput -join (" ")
-	"[$currentDate $currentTime] $logOutput" + "----" + $Commenttext | Out-File F:\DATA\SharedData\FTPdata\hello.log -Append
+	"[$currentDate $currentTime] $logOutput" + "----" + $Commenttext | Out-File $logfile -Append
 }
 
 
 
-write-log "Hello there"
+write-log "Hello there22"
