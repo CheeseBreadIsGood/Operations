@@ -313,7 +313,8 @@ get-mmagent
 ##setup windows search to auto start up
 Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
-
+Set-service -name Audiosrv -StartupType Automatic
+start-service -name Audiosrv
 }
 Function Set-TaskLog{
   param(
