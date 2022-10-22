@@ -315,6 +315,10 @@ Set-service -name WSearch -StartupType Automatic
 start-service -name Wsearch
 Set-service -name Audiosrv -StartupType Automatic
 start-service -name Audiosrv
+# Remote Chrome shortcut on default desktop
+##remove chrome shortcut from default desktop
+Remove-Item "C:\Users\Public\Desktop\Google Chrome.lnk"
+
 ## create a shortcut onto default desktop for Edge
 $SourceFilePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 $ShortcutPath = "C:\Users\Public\Desktop\BrowserEdge.lnk"
