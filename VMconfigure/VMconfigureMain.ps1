@@ -54,8 +54,13 @@ function Disable-InternetExplorerESC {   #--------------------------------------
 
     #Just a few prerequisite for logging into Azure.
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted # register PowerShell Gallery as a trusted repository
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    # setup PowerShell Gallery to use TLS 1.2
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     #Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
-    Install-Module -Name PowerShellGet -Force
+    Install-PackageProvider -Name NuGet -Force
+    Install-Module -Name PowerShellGet -AllowClobber -Force
     Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force   
 }
 Function Set-DomainController{  ######-------------- Set server as Domain Controller -------------#########
@@ -317,7 +322,8 @@ Set-service -name Audiosrv -StartupType Automatic
 start-service -name Audiosrv
 # Remote Chrome shortcut on default desktop
 ##remove chrome shortcut from default desktop
-Remove-Item "C:\Users\Public\Desktop\Google Chrome.lnk"
+Remove-Item "C:\Users\Public\Desktop\Google Chrome.lnk" 
+
 
 ## create a shortcut onto default desktop for Edge
 $SourceFilePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"

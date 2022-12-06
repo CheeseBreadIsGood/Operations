@@ -164,6 +164,7 @@ Function Move-QBjunk{
    Clear out the QB junk folder that puts several junk startups.
 #>
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*",     "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -force
+Remove-Item "C:\Users\Public\Desktop\QuickBooks File Manager 2023.lnk"  #not needed.
 }
 
 
