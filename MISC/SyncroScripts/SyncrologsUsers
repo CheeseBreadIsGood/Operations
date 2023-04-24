@@ -1,0 +1,100 @@
+Import-Module $env:SyncroModule
+
+ 
+
+# Get all user accounts on the computer
+$Users = Get-LocalUser | Where-Object {$_.Enabled -eq $true -and $_.Name -ne "Guest"}
+
+ 
+
+# Loop through each user and get their last logon time
+foreach ($User in $Users) {
+    write " Checking for $user Login logoff Events"
+    # Get all logon events for the user
+    $LogOnEvents = Get-EventLog -LogName Security -InstanceId 4624 | where { $_.ReplacementStrings[5] -eq $User.Name }
+
+ 
+
+    if ($LogOnEvents.Count -gt 0) {
+        # Get the most recent logon time from the events
+        $LogonTime = $LogOnEvents | Sort-Object -Property TimeGenerated -Descending | Select-Object -First 1 | Select-Object -ExpandProperty TimeGenerated
+
+ 
+
+        # Display the logon time for the user
+        $logInUser = "$($User.Name) last Logged in at $($LogonTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        #Log-Activity -Message "$user" -EventName "User Login"
+        Write-Output "$logInUser"
+
+    }
+    else {
+        # Display a message for the user if no logon events were found
+        Write-Output "$($User.Name):  No logon events found"
+    }
+
+ 
+
+    # Loop through each user and get their last logoff time
+
+ 
+
+    # Get all logoff events for the user
+    $LogOffEvents = Get-EventLog -LogName Security -InstanceId 4647 | where { $_.ReplacementStrings[1] -eq $User.Name }
+
+ 
+
+    if ($LogOffEvents.Count -gt 0) {
+        # Get the most recent logoff time from the events
+        $LogoffTime = $LogOffEvents | Sort-Object -Property TimeGenerated -Descending | Select-Object -First 1 | Select-Object -ExpandProperty TimeGenerated
+
+ 
+
+ 
+
+        # Display the logoff time for the user
+        $logOffUser = "$($User.Name): Logged off at $($LogoffTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        #Log-Activity -Message "$user" -EventName "User Logoff"
+        Write-Output "$logOffUser"
+    }
+    else {
+        # Display a message for the user if no logoff events were found
+        Write-Output "$($User.Name):  No logoff events found"
+    }
+
+ 
+
+    write " Done checking for $user Login logoff Events"
+    Write " comparing time results"
+
+ 
+
+
+    if($LogonTime -gt $LogoffTime){
+
+ 
+
+        write " $($User.Name)   Log On Time at $LogonTime is after the Log off time at $logOffTime"
+        write " Not creating Log Off entry"
+        write " Creating Log on Entry"
+        Log-Activity -Message "$logInUser" -EventName "User Login"
+
+ 
+
+    }
+    else{
+
+ 
+
+        write " $($User.Name)  Log On Time at $LogonTime is after the Log off time at $logOffTime"
+        write " Not creating Log Off entry"
+        write " Creating Log on Entry"
+        Log-Activity -Message "$logOffUser" -EventName "User Logoff"
+
+ 
+
+    }
+
+ 
+
+
+}

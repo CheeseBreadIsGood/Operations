@@ -1,0 +1,1 @@
+Get-Eventlog -LogName System | Where-Object ($_.EventID -eq "6005" -or $_.EventID -eq "6006"} | Sort-Object TimeGenerated -Descending | Select-Object -First 1 | Formate-Table - property TimeGenerated
