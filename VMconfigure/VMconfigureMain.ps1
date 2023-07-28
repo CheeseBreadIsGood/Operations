@@ -306,6 +306,8 @@ Function Set-Misc{ #------------------------------------------------------------
   #DNS forwarders
 $ipss = ("8.8.8.8", "8.8.4.4")
 Set-DnsServerForwarder -IPAddress $ipss -PassThru
+$ipss = ("2001:4860:4860::8888", "2001:4860:4860::8844")
+Set-DnsServerForwarder -IPAddress $ipss -PassThru
 #### memory compression
 ##### Server 2019 Memory Compression/PageCombining
 
