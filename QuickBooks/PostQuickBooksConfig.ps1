@@ -7,12 +7,30 @@
     This will change login type and restart for QuickBooks Services and move junk files out of normal startup. 
   
   .NOTES
-    Version:        1.2
+    Version:        1.3 Modify Date 7/30/23 Looked for groupNoScriptSTOP to stop modify NTFS rights
     Author:         Mike Ryan   
     Creation Date:  08/10/21
-    Purpose/Change: To run this right after a QuickBook install
+    Purpose/Change: To run this right after a QuickBook install. This will do many things
+    1. Remove the jumk in all users forlder
+    2. Setup QuickBooks damanager service to run as localsystem
+    3. Change the NTFS security rights to proper settings (unless the groupNoScriptSTOP is there)
 #>
 
+Function Check-groupNoScriptSTOP{
+
+  Get-ChildItem -Path "F:\DATA" | ForEach-Object {
+      $path = $_.FullName
+      $acl = Get-Acl $path
+      $accessRules = $acl.Access
+      foreach ($accessRule in $accessRules) {
+          Write-Host "$path $($accessRule.IdentityReference) $($accessRule.FileSystemRights)"
+          If ($accessRule.IdentityReference -like "cloud\groupNoScriptSTOP")
+          {  write-host "Found It" -ForegroundColor Cyan
+             return $true
+          }
+      }
+    }
+  }   #end function
 Function Get-NoobehData {
   #Open the NoobehNAS
 net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
@@ -171,7 +189,16 @@ Remove-Item "C:\Users\Public\Desktop\QuickBooks File Manager 2023.lnk"  #not nee
 ## functions to finish
 
 #Not needed Get-NoobehData  #get new scripts from nas to local system
-Set-NTFSsecurity ## add local system NTFS security to folders
+
+$testthis = Check-groupNoScriptSTOP
+if ($testthis) {
+  write-host "Found groupNoScriptSTOP" -ForegroundColor Green             
+                }
+else {
+  <# Action when all if and elseif conditions are false #>
+  Set-NTFSsecurity ## add local system NTFS security to folders
+}
+
 Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
 Set-ServerServices ## for QuickBooks services to automatic 
 Move-QBjunk ##QuickBooks extra autostart crap. Removed.
