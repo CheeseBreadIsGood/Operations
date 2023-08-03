@@ -304,7 +304,7 @@ New-ScheduledTaskFolder Noobeh  #create folder if not already there
 Function Set-Misc{ #---------------------------------------------------------------------
 
   #DNS forwarders
-$ipss = ("8.8.8.8", "8.8.4.4")
+$ipss = ("168.63.129.16", "8.8.8.8")
 Set-DnsServerForwarder -IPAddress $ipss -PassThru
 
 #### memory compression
