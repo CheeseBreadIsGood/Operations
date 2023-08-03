@@ -99,7 +99,8 @@ Function Set-DATAHarddrive{ #---------------------------------------------------
 #################### PowerShell Configure New Server with external hard drive ###########
 
 Get-Disk | Where-Object PartitionStyle –Eq "RAW"| Initialize-Disk -PartitionStyle GPT   
-Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False      
+Get-Disk -Number 2 | New-Partition -UseMaximumSize -DriveLetter F | Format-Volume -FileSystem NTFS -NewFileSystemLabel "DATA" -Confirm:$False   
+Start-Sleep -Seconds 5 # wait five seconds just to make sure the format of F: drive is finished.   
 #########################################################################################
 ###Now create the sub folders to this seconddary hard drive
 New-Item -Path 'F:\DATA\AppsData' -ItemType Directory  -ErrorAction Ignore 
