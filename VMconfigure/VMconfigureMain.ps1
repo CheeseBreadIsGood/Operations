@@ -310,11 +310,11 @@ Set-DnsServerForwarder -IPAddress $ipss -PassThru
 #### memory compression
 ##### Server 2019 Memory Compression/PageCombining
 
-Enable-MMAgent -MemoryCompression
-Enable-MMAgent -PageCombining
-Enable-MMAgent -ApplicationLaunchPrefetching
+#Enable-MMAgent -MemoryCompression
+#Enable-MMAgent -PageCombining
+#Enable-MMAgent -ApplicationLaunchPrefetching
 ## Enabel-MMAgent -ApplicationPreLaunch
-get-mmagent
+#get-mmagent
 
 ##setup windows search to auto start up
 Set-service -name WSearch -StartupType Automatic
