@@ -16,21 +16,21 @@
     3. Change the NTFS security rights to proper settings (unless the groupNoScriptSTOP is there)
 #>
 
-Function Check-groupNoScriptSTOP{
+Function Search-UserGroups{
 
-  Get-ChildItem -Path "F:\DATA" | ForEach-Object {
-      $path = $_.FullName
-      $acl = Get-Acl $path
-      $accessRules = $acl.Access
-      foreach ($accessRule in $accessRules) {
-          Write-Host "$path $($accessRule.IdentityReference) $($accessRule.FileSystemRights)"
-          If ($accessRule.IdentityReference -like "cloud\groupNoScriptSTOP")
-          {  write-host "Found It" -ForegroundColor Cyan
-             return $true
-          }
-      }
+  Get-ChildItem -Path "C:\DATA\AppsData\SQLdata" | ForEach-Object {
+    $path = $_.FullName
+    $acl = Get-Acl $path
+    $accessRules = $acl.Access
+    foreach ($accessRule in $accessRules) {
+        Write-Host "$path $($accessRule.IdentityReference) $($accessRule.FileSystemRights)"
+        If (($accessRule.IdentityReference -like "NT SERVICE\MSSQL$*") -or ($accessRule.IdentityReference -like "cloud\groupNoScriptSTOP"))
+        {  write-host "Found It" -ForegroundColor Cyan
+           return $true
+        }
     }
-  }   #end function
+  }
+}   #end function
 Function Get-NoobehData {
   #Open the NoobehNAS
 net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
@@ -107,7 +107,6 @@ Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
   
     
 }
-
 Function Set-ScheduledQuickBooksCheck{ 
 <# 
   .DESCRIPTION
@@ -140,7 +139,6 @@ Register-ScheduledTask CheckQBStatus -InputObject $task -TaskPath "Noobeh"
 Enable-ScheduledTask -TaskName CheckQBStatus  -TaskPath "Noobeh"
 
 }
-
 Function Set-ServerServices{
 <# 
   .DESCRIPTION
@@ -184,13 +182,16 @@ Function Move-QBjunk{
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*",     "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -force
 Remove-Item "C:\Users\Public\Desktop\QuickBooks File Manager 2023.lnk"  #not needed.
 }
+Function Rename-QBDownloadFolder{
+  Get-ChildItem -Path "F:\DATA\AppsData\Qbooks" -Filter "*DownloadQB*" | Rename-Item -NewName {$_.Name -replace "DownloadQB","DownloadQB_DELETED_ME_"}
 
+}
 
 ## functions to finish
 
 #Not needed Get-NoobehData  #get new scripts from nas to local system
 
-$testthis = Check-groupNoScriptSTOP
+$testthis = Search-UserGroups
 if ($testthis) {
   write-host "Found groupNoScriptSTOP" -ForegroundColor Green             
                 }
@@ -202,3 +203,5 @@ else {
 Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
 Set-ServerServices ## for QuickBooks services to automatic 
 Move-QBjunk ##QuickBooks extra autostart crap. Removed.
+Find-qbDownload 
+Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.
