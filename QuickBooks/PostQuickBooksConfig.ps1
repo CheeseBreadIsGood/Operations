@@ -204,4 +204,4 @@ else {
 Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
 Set-ServerServices ## for QuickBooks services to automatic 
 Move-QBjunk ##QuickBooks extra autostart crap. Removed.
-Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.
+## (MOVED to the CHeckQBservice sister script) Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.

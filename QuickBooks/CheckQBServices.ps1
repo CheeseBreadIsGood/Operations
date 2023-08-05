@@ -1,7 +1,7 @@
 
 ##move Junk items
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*",     "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -Force
-
+Get-ChildItem -Path "F:\DATA\AppsData\Qbooks" -Filter "*DownloadQB*" | Rename-Item -NewName {$_.Name -replace "DownloadQB","DownloadQB_DELETE_ME_"}
 ##CheckQB services Status
 $list = get-service QuickBooks* #Get all QBDB services into an array
 
