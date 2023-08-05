@@ -14,6 +14,7 @@
     1. Remove the jumk in all users forlder
     2. Setup QuickBooks damanager service to run as localsystem
     3. Change the NTFS security rights to proper settings (unless the groupNoScriptSTOP is there)
+    4. Rename the QBdownload33 folder to stop ghost popups for an update.(This should run as a scheduled tast for when users log in)
 #>
 
 Function Search-UserGroups{
@@ -183,7 +184,7 @@ Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Qu
 Remove-Item "C:\Users\Public\Desktop\QuickBooks File Manager 2023.lnk"  #not needed.
 }
 Function Rename-QBDownloadFolder{
-  Get-ChildItem -Path "F:\DATA\AppsData\Qbooks" -Filter "*DownloadQB*" | Rename-Item -NewName {$_.Name -replace "DownloadQB","DownloadQB_DELETED_ME_"}
+  Get-ChildItem -Path "F:\DATA\AppsData\Qbooks" -Filter "*DownloadQB*" | Rename-Item -NewName {$_.Name -replace "DownloadQB","DownloadQB_DELETE_ME_"}
 
 }
 
@@ -203,5 +204,4 @@ else {
 Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
 Set-ServerServices ## for QuickBooks services to automatic 
 Move-QBjunk ##QuickBooks extra autostart crap. Removed.
-Find-qbDownload 
 Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.
