@@ -199,10 +199,9 @@ if ($testthis) {
                 }
 else {
   <# Action when all if and elseif conditions are false #>
-  Set-NTFSsecurity ## add local system NTFS security to folders
-}
-
-Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
-Set-ServerServices ## for QuickBooks services to automatic 
-Move-QBjunk ##QuickBooks extra autostart crap. Removed.
-## (MOVED to the CHeckQBservice sister script) Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.
+   Set-NTFSsecurity ## add local system NTFS security to folders
+   Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
+   Set-ServerServices ## for QuickBooks services to automatic 
+   Move-QBjunk ##QuickBooks extra autostart crap. Removed.
+         ##   (MOVED to the CHeckQBservice sister script) Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.
+   } #end else
