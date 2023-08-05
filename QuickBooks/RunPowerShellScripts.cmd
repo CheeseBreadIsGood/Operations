@@ -1,0 +1,1 @@
+Powershell.exe -executionpolicy remotesigned -File C:\NoobehIT\ServerSetup\AdminScripts\CheckQBservices.ps1
