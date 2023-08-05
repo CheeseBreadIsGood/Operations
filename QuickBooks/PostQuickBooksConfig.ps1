@@ -15,7 +15,8 @@
     2. Setup QuickBooks damanager service to run as localsystem
     3. Change the NTFS security rights to proper settings (unless the groupNoScriptSTOP is there)
     4. Rename the QBdownload33 folder to stop ghost popups for an update.(This should run as a scheduled tast for when users log in)
-#>
+    5. Setup a schedule tast upon log in to check server's status of QuickBooks configurations
+    #>
 
 Function Search-UserGroups{
 
