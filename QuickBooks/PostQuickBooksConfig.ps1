@@ -20,7 +20,7 @@
 
 Function Search-UserGroups{
 
-  Get-ChildItem -Path "C:\DATA\AppsData\SQLdata" | ForEach-Object {
+  Get-ChildItem -Path "C:\DATA\AppsData\Qbooks" | ForEach-Object {
     $path = $_.FullName
     $acl = Get-Acl $path
     $accessRules = $acl.Access
