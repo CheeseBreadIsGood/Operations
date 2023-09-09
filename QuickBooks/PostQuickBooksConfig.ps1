@@ -185,7 +185,8 @@ Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Qu
 Remove-Item "C:\Users\Public\Desktop\QuickBooks File Manager 2023.lnk"  #not needed.
 }
 Function Rename-QBDownloadFolder{  #This function is also used in scheduled task
-  Get-ChildItem -Path "F:\DATA\AppsData\Qbooks" -Filter "*DownloadQB*" | Rename-Item -NewName {$_.Name -replace "DownloadQB","DownloadQB_DELETE_ME_"}
+  $folderPath = "F:\DATA\AppsData\Qbooks" 
+  Get-ChildItem -Path $folderPath -Filter "*DownloadQB*" -Recurse | Remove-Item -force -recurse -ErrorAction SilentlyContinue
 
 }
 
