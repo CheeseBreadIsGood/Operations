@@ -1,0 +1,19 @@
+$PathA = "C:\Users\ServerAdmin\Desktop\FolderA\*"
+$PathB = "C:\Users\ServerAdmin\Desktop\FolderB\"
+
+$watcher = New-Object System.IO.FileSystemWatcher #create watcher object
+# now add parameters
+$watcher.IncludeSubdirectories = $true
+$watcher.Path = $PathA
+$watcher.EnableRaisingEvents = $true
+$action =
+{
+    $path = $event.SourceEventArgs.FullPath
+    Move-Item –Path $PathA -Destination $PathB
+    $changetype = $event.SourceEventArgs.ChangeType
+    Write-Host "$path was $changetype at $(get-date)"
+}
+
+Register-ObjectEvent $watcher 'Created' -Action $action
+
+# to remove file watcher Get-EventSubscriber | Unregister-Event
