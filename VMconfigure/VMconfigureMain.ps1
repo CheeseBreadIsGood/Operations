@@ -7,7 +7,7 @@
     This will install some software configure external hard drive and create a default domain controller 
   
   .NOTES
-    Version:        1.2.220120
+    Version:        1.3.04042024
     Author:         Mike Ryan   
     Creation Date:  05/1/20
     Purpose/Change: Many years of converting manual work into this script. Goal is to "Set it and forget it" fuctionality
