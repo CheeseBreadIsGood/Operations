@@ -79,19 +79,7 @@ Set-TimeZone "Eastern Standard Time"
 }
 
 Function Set-CopyNoobehFiles{ #---------------------------------------------------------------------
-  Update-AzConfig -EnableLoginByWam $false <#
-  .SYNOPSIS
-  Short description
-  
-  .DESCRIPTION
-  Long description
-  
-  .EXAMPLE
-  An example
-  
-  .NOTES
-  General notes
-  #>fall back to old style, log into 
+  Update-AzConfig -EnableLoginByWam $false ##fall back to old style, log into 
   Connect-AzAccount -Tenant '67327683-1032-4f0b-81d1-8abb3ae90945' -SubscriptionId '62a335cc-1e34-418f-9170-3a5cca81e22a' #log into azure so you can get access to secret keys
     $NASkey = Get-AzKeyVaultSecret -VaultName "guessthenumber" -Name "Cloudnaskey1" -AsPlainText ## get nas key
     
