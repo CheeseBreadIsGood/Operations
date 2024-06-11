@@ -21,9 +21,21 @@
 ##move Junk items
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*", 
                 "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -Force
-# Look for Downloadqb33 folder that causes qhoast popup for users. Remove them
+
+                # Look for Downloadqb33 folder that causes qhoast popup for users. Remove them
 $folderPath = "F:\DATA\AppsData\Qbooks" 
 Get-ChildItem -Path $folderPath -Filter "*DownloadQB*" -Recurse | Remove-Item -force -recurse -ErrorAction SilentlyContinue
+            #Look for Downloadqb** folders from hidden C:\ProgramData\Intuit\QuickBooks Enterprise Solutions 23.0\Components
+# Specify the root folder path
+$RootFolder = "C:\ProgramData\Intuit"   
+# Get all subfolders recursively
+$Subfolders = Get-ChildItem -Path $RootFolder -Directory -Recurse | Where-Object { $_.Name -like "DownloadQB*" }
+# Display the subfolder paths
+$Subfolders | ForEach-Object {
+    Write-Output $_.FullName
+    Remove-Item -Path  $_.FullName -Recurse
+}
+
 ##CheckQB services Status
 $list = get-service QuickBooks* #Get all QBDB services into an array
 $lastQBService = $list[$list.count -1]  #We only want the latest version of QBDB. ignore others
