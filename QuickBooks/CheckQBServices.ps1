@@ -18,7 +18,7 @@
     4. Rename the QBdownload33 folder to stop ghost popups for an update.(This should run as a scheduled tast for when users log in)
     5. Setup a schedule tast upon log in to check server's status of QuickBooks configurations
     #>
-##move Junk items
+##----------------------move Junk items-------------------------------------------------------------
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*", 
                 "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -Force
 
@@ -34,12 +34,12 @@ $Subfolders | ForEach-Object {
     Write-Output $_.FullName
     Remove-Item -Path  $_.FullName -Recurse
 }
-##6-------------
+##---------------------------Kill Updates.exe-------------------------------------------------
 Get-Process qbupdate -ErrorAction SilentlyContinue | Stop-Process -PassThru -Force #Find all update processes and kill them
 
 
 
-##CheckQB services Status
+##----------------------------------CheckQB services Status------------------------------------
 $list = get-service QuickBooks* #Get all QBDB services into an array
 $lastQBService = $list[$list.count -1]  #We only want the latest version of QBDB. ignore others
 If ($lastQBService.StartType -ne "Automatic" ) #if it is not set to Automatic start up, set it
