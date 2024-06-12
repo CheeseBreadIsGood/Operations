@@ -33,7 +33,7 @@ Function Search-UserGroups{
     }
   }
 }   #end function
-Function Get-NoobehData {
+<# This is not needed ANYMORE Function Get-NoobehData {
   #Open the NoobehNAS
 net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
 #Copy important files over to the new server
@@ -41,8 +41,9 @@ Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\AdminScripts C:
 net use /delete \\noobehnas.file.core.windows.net\cloudnas
 }
 Function Set-NTFSsecurity{
-<# 
-  .DESCRIPTION
+>#
+  <# 
+  DESCRIPTION
    Make sure the Qbooks folder has SYSTEM with modify rights for the QBdatabase.
 #>
    ## Blow out and remove all File INHERITANCE########################
@@ -150,10 +151,10 @@ sc.exe failure Tssdis reset= 86400 actions= restart/60000/restart/400000/restart
 
 sc.exe failure QBCFMonitorService reset= 86400 actions= restart/60000/restart/60000/restart/60000 
 sc.exe config  QBCFMonitorService obj="Localsystem"
- set-Service -name QBCFMonitorService -startuptype Automatic
+set-Service -name QBCFMonitorService -startuptype Automatic
 
 Set-service -name QBIDPservice -StartupType Disable 
-
+Set-service -name QBUpdateMonitorService -StartupType Disable 
 
 
 ##CheckQB services Status

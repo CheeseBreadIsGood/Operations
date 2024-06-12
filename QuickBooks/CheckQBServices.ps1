@@ -26,15 +26,18 @@ Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Qu
 $folderPath = "F:\DATA\AppsData\Qbooks" 
 Get-ChildItem -Path $folderPath -Filter "*DownloadQB*" -Recurse | Remove-Item -force -recurse -ErrorAction SilentlyContinue
             #Look for Downloadqb** folders from hidden C:\ProgramData\Intuit\QuickBooks Enterprise Solutions 23.0\Components
-# Specify the root folder path
-$RootFolder = "C:\ProgramData\Intuit"   
-# Get all subfolders recursively
-$Subfolders = Get-ChildItem -Path $RootFolder -Directory -Recurse | Where-Object { $_.Name -like "DownloadQB*" }
-# Display the subfolder paths
+
+$RootFolder = "C:\ProgramData\Intuit"   # Specify the root folder path
+$Subfolders = Get-ChildItem -Path $RootFolder -Directory -Recurse | Where-Object { $_.Name -like "DownloadQB*" } # Get all subfolders recursively
+# Display the subfolder paths & delete
 $Subfolders | ForEach-Object {
     Write-Output $_.FullName
     Remove-Item -Path  $_.FullName -Recurse
 }
+##6-------------
+Get-Process qbupdate -ErrorAction SilentlyContinue | Stop-Process -PassThru -Force #Find all update processes and kill them
+
+
 
 ##CheckQB services Status
 $list = get-service QuickBooks* #Get all QBDB services into an array
