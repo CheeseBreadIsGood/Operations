@@ -13,10 +13,9 @@
     Creation Date:  08/10/21
     Purpose/Change: To run this right after a QuickBook install. This will do many things
     1. Remove the jumk in all users forlder
-    2. Setup QuickBooks damanager service to run as localsystem
-    
-    4. Rename the QBdownload33 folder to stop ghost popups for an update.(This should run as a scheduled tast for when users log in)
-    5. Setup a schedule tast upon log in to check server's status of QuickBooks configurations
+    2. Remove Download folders
+    3. Kill all running QuickBooksUpdates.exe
+    5. Reconfigure QuickBooks database service to run as system
     #>
 ##----------------------move Junk items-------------------------------------------------------------
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*", 
