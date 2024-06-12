@@ -33,20 +33,13 @@ Function Search-UserGroups{
     }
   }
 }   #end function
-<# This is not needed ANYMORE Function Get-NoobehData {
-  #Open the NoobehNAS
-net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
-#Copy important files over to the new server
-Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\AdminScripts C:\NoobehIT\ServerSetup\ -Recurse -Force
-net use /delete \\noobehnas.file.core.windows.net\cloudnas
-}
+
 Function Set-NTFSsecurity{
->#
-  <# 
-  DESCRIPTION
+  <#   DESCRIPTION
    Make sure the Qbooks folder has SYSTEM with modify rights for the QBdatabase.
-#>
+  #>
    ## Blow out and remove all File INHERITANCE########################
+
 $folder = 'F:\DATA\appsData\Qbooks'
 $acl = Get-ACL -Path $folder
 $acl.SetAccessRuleProtection($True, $False) #remote inheritance & remove users
@@ -107,8 +100,6 @@ $ACL.AddAccessRule($AccessRule)  # Now add the new rule to the temp ACL object, 
 Set-Acl $FolderPath -AclObject $ACL  #set it and forget it.
 
   ### END adding security for USERS and Admins #>
-  
-    
 }
 Function Set-ScheduledQuickBooksCheck{ 
 <# 
@@ -192,19 +183,7 @@ Function Rename-QBDownloadFolder{  #This function is also used in scheduled task
 }
 
 ## functions to finish
-
-#Not needed Get-NoobehData  #get new scripts from nas to local system
-
-$testthis = Search-UserGroups
-if ($testthis) {
-  write-host "Found groupNoScriptSTOP" -ForegroundColor Green             
-                }
-else {
-  <# Action when all if and elseif conditions are false #>
-   Rename-QBDownloadFolder #this is to stop qhost popups
-   Set-NTFSsecurity ## add local system NTFS security to folders
    Set-ScheduledQuickBooksCheck ## run the new scripts anytime someone logs in.
    Set-ServerServices ## for QuickBooks services to automatic 
    Move-QBjunk ##QuickBooks extra autostart crap. Removed.
-         ##   (MOVED to the CHeckQBservice sister script) Rename-QBDownloadFolder ## look in qbooks folder and if found rename the download folder with DELETE_ME to stop ghost popups.
-   } #end else
+ 
