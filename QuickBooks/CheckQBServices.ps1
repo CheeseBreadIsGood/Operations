@@ -20,6 +20,8 @@
 ##----------------------move Junk items-------------------------------------------------------------
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*", 
                 "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -Force
+##---------------------------Kill Updates.exe-------------------------------------------------
+Get-Process qbupdate -ErrorAction SilentlyContinue | Stop-Process -PassThru -Force #Find all update processes and kill them
 
                 # Look for Downloadqb33 folder that causes qhoast popup for users. Remove them
 $folderPath = "F:\DATA\AppsData\Qbooks" 
@@ -33,9 +35,6 @@ $Subfolders | ForEach-Object {
     Write-Output $_.FullName
     Remove-Item -Path  $_.FullName -Recurse
 }
-##---------------------------Kill Updates.exe-------------------------------------------------
-Get-Process qbupdate -ErrorAction SilentlyContinue | Stop-Process -PassThru -Force #Find all update processes and kill them
-
 
 
 ##----------------------------------CheckQB services Status------------------------------------
