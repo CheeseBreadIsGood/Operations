@@ -8,7 +8,7 @@
     This will change login type and restart for QuickBooks Services and move junk files out of normal startup. 
   
   .NOTES
-    Version:        1.4 Modify Date 6/12/24 Looked for groupNoScriptSTOP to stop modify NTFS rights
+    Version:        1.5 Modify Date 6/20/24 Looked for groupNoScriptSTOP to stop modify NTFS rights
     Author:         Mike Ryan   
     Creation Date:  08/10/21
     Purpose/Change: To run this right after a QuickBook install. This will do many things
@@ -35,6 +35,10 @@ $Subfolders | ForEach-Object {
     Write-Output $_.FullName
     Remove-Item -Path  $_.FullName -Recurse
 }
+
+##Stop the update service
+Set-Service -Name "QBUpdateMonitorService" -StartupType Disabled
+Stop-Service -Name "QBUpdateMonitorService"
 
 
 ##----------------------------------CheckQB services Status------------------------------------
