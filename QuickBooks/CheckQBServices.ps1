@@ -38,7 +38,7 @@ $Subfolders | ForEach-Object {
 
 ##Stop the update service
 Set-Service -Name "QBUpdateMonitorService" -StartupType Disabled
-Stop-Service -Name "QBUpdateMonitorService"
+Stop-Service -Name "QBUpdateMonitorService" -force
 
 
 ##----------------------------------CheckQB services Status------------------------------------
