@@ -53,15 +53,13 @@ function Disable-InternetExplorerESC {   #--------------------------------------
  Function Set-PowerShellUp{ #---------------------------------------------------------------------
 
     #Just a few prerequisite for logging into Azure.
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force; #Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+    Install-PackageProvider -Name NuGet -Force; #Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted # register PowerShell Gallery as a trusted repository
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-    # setup PowerShell Gallery to use TLS 1.2
-    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-    #Install-PackageProvider -Name NuGet -Force #-RequiredVersion 2.8.5.201 
-    Install-PackageProvider -Name NuGet -Force
-    Install-Module -Name PowerShellGet -AllowClobber -Force
-    Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force   
+    Install-Module -Name Az -AllowClobber -Scope CurrentUser
+      
+  #  Install-Module -Name PowerShellGet -AllowClobber -Force
+  #  Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force   
     Update-AzConfig -DefaultSubscriptionForLogin "MendelsonPayGo"
 }
 Function Set-DomainController{  ######-------------- Set server as Domain Controller -------------#########
