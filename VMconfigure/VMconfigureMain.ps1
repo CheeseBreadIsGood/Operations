@@ -60,7 +60,7 @@ function Disable-InternetExplorerESC {   #--------------------------------------
       
   #  Install-Module -Name PowerShellGet -AllowClobber -Force
   #  Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force   
-    Update-AzConfig -DefaultSubscriptionForLogin "MendelsonPayGo"
+    
 }
 Function Set-DomainController{  ######-------------- Set server as Domain Controller -------------#########
 if ((gwmi win32_computersystem).partofdomain -eq $False) {  # Only run if this is not a domain controller yet
@@ -77,6 +77,7 @@ Set-TimeZone "Eastern Standard Time"
 }
 
 Function Set-CopyNoobehFiles{ #---------------------------------------------------------------------
+  Update-AzConfig -DefaultSubscriptionForLogin "MendelsonPayGo"
   Update-AzConfig -EnableLoginByWam $false ##fall back to old style, log into 
   Connect-AzAccount -Tenant '67327683-1032-4f0b-81d1-8abb3ae90945' -SubscriptionId '62a335cc-1e34-418f-9170-3a5cca81e22a' #log into azure so you can get access to secret keys
     $NASkey = Get-AzKeyVaultSecret -VaultName "guessthenumber" -Name "Cloudnaskey1" -AsPlainText ## get nas key
