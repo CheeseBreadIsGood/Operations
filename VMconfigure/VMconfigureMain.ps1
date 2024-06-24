@@ -82,17 +82,17 @@ Function Set-CopyNoobehFiles{ #-------------------------------------------------
   Connect-AzAccount -Tenant '67327683-1032-4f0b-81d1-8abb3ae90945' -SubscriptionId '62a335cc-1e34-418f-9170-3a5cca81e22a' #log into azure so you can get access to secret keys
     $NASkey = Get-AzKeyVaultSecret -VaultName "guessthenumber" -Name "Cloudnaskey1" -AsPlainText ## get nas key
     
- $runCommand =    "net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas $($NASkey)"  #build command
+ $runCommand =    "net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas $($NASkey)"  #build command to connect to Cloud NAS
 
     #Open the NoobehNAS
   Invoke-Expression $runCommand   #run command
 ### net use \\noobehnas.file.core.windows.net\cloudnas /u:AZURE\noobehnas **************Thisisthekeyforittocopythefiles**********
 #Copy important files over to the new server
-New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT
-Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\ c:\noobehIT -Recurse -Force
-Copy-Item C:\NoobehIT\ServerSetup\Bginfo\BginfoSetting* "C:\Users\ServerAdmin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-Copy-Item "C:\NoobehIT\ServerSetup\Graphics\Log Off Noobeh.lnk" "C:\Users\Public\Desktop\"
-net use /delete \\noobehnas.file.core.windows.net\cloudnas
+  New-Item -ErrorAction Ignore -ItemType directory -Path c:\NoobehIT
+  Copy-Item \\noobehnas.file.core.windows.net\cloudnas\ServerSetup\ c:\noobehIT -Recurse -Force
+  Copy-Item C:\NoobehIT\ServerSetup\Bginfo\BginfoSetting* "C:\Users\ServerAdmin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+  Copy-Item "C:\NoobehIT\ServerSetup\Graphics\Log Off Noobeh.lnk" "C:\Users\Public\Desktop\"
+  net use /delete \\noobehnas.file.core.windows.net\cloudnas  #Remove path to Cloud NAS
 }
 Function Set-DATAHarddrive{ #---------------------------------------------------------------------
     ## Format attached new Drive to Letter F:
