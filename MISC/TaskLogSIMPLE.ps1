@@ -1,17 +1,21 @@
 #---------------------Task Functions---------------------
+
+
 Function Set-TaskLog{
-    ## Create a new log file that you name. It will not over write an existing log. Nice
+    ## Create a new log file that you name fully with full path. It will not over write an existing log.
     param(
       [Parameter (Mandatory = $false)] [String]$LogName
       )
+      $global:LogPath = $LogName
       New-item $global:LogPath
   }
   Function Confirm-Tasklog{
+   # need log file name with extnetion
    #returns true if the named log file is there
     param(
       [Parameter (Mandatory = $true)] [String]$LogName
       )
-      $IsFileThere = test-path -path "C:\NoobehIT\ServerSetup\MISCsoftware\$logName.log" -PathType Leaf
+      $IsFileThere = test-path -path $global:LogPath -PathType Leaf
       If ($IsFileThere) {
         Write-Host "------LOGFILE->$LogName.log<- is already there. END"
         }
@@ -19,7 +23,7 @@ Function Set-TaskLog{
     }
   
     
-  function Add-taskLog {
+  function Add-Event {
      param(
       [Parameter (Mandatory = $false)] [String]$Event
       )
@@ -28,9 +32,10 @@ Function Set-TaskLog{
   }
    
     ##--------------------- Global variables--------------------
-  $global:LogPath = "C:\NoobehIT\ServerSetup\MISCsoftware\GeneralYes.log"  #global varable path and filename
+  $global:LogPath = "C:\NoobehIT\ServerSetup\AdminScripts\KillQBScript.log"  #Default & global varable path and filename
+  
   
   # examples--
-  #Add-tasklog ---------------------StartHere--------------------
-  #add-tasklog 'who it works'
-  #Add-taskLog "how cis ERROR"
+  #Add-EVENT ---------------------StartHere--------------------
+  #add-EVENT 'who it works five five five'
+  #Add-EVENT "how hello hello STOP ERROR"
