@@ -36,6 +36,15 @@ $Subfolders | ForEach-Object {
     Remove-Item -Path  $_.FullName -Recurse
 }
 
+
+$RootFolder = "C:\Program Files\Intuit"   # Specify the root folder path
+$Subfolders = Get-ChildItem -Path $RootFolder -Directory -Recurse | Where-Object { $_.Name -like "DownloadQB*" } # Get all subfolders recursively
+# Display the subfolder paths & delete
+$Subfolders | ForEach-Object {
+    Write-Output $_.FullName
+    Remove-Item -Path  $_.FullName -Recurse
+}
+
 ##Stop the update service
 Set-Service -Name "QBUpdateMonitorService" -StartupType Disabled
 Stop-Service -Name "QBUpdateMonitorService" -force
