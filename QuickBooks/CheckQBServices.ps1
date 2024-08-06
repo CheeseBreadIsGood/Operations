@@ -10,7 +10,7 @@
   .NOTES
     Version:        1.5 Modify Date 6/20/24 Looked for groupNoScriptSTOP to stop modify NTFS rights
     Author:         Mike Ryan   
-    Creation Date:  08/10/21
+    Creation Date:  08/10/21 update 080124
     Purpose/Change: To run this right after a QuickBook install. This will do many things
     1. Remove the jumk in all users forlder
     2. Remove Download folders
@@ -33,7 +33,7 @@ $Subfolders = Get-ChildItem -Path $RootFolder -Directory -Recurse | Where-Object
 # Display the subfolder paths & delete
 $Subfolders | ForEach-Object {
     Write-Output $_.FullName
-    Remove-Item -Path  $_.FullName -Recurse
+    Remove-Item -Path  $_.FullName -Recurse -Force
 }
 
 
