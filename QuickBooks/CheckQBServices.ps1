@@ -20,6 +20,10 @@
 ##----------------------move Junk items-------------------------------------------------------------
 Move-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\QuickBooks*", 
                 "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Intuit*"  -Destination C:\NoobehIT\ServerSetup\MISCsoftware\QBjunk -Force
+
+                ##Stop the update service
+Set-Service -Name "QBUpdateMonitorService" -StartupType Disabled
+Stop-Service -Name "QBUpdateMonitorService" -force
 ##---------------------------Kill Updates.exe-------------------------------------------------
 Get-Process qbupdate -ErrorAction SilentlyContinue | Stop-Process -PassThru -Force #Find all update processes and kill them
 
@@ -45,9 +49,7 @@ $Subfolders | ForEach-Object {
     Remove-Item -Path  $_.FullName -Recurse
 }
 
-##Stop the update service
-Set-Service -Name "QBUpdateMonitorService" -StartupType Disabled
-Stop-Service -Name "QBUpdateMonitorService" -force
+
 
 
 ##----------------------------------CheckQB services Status------------------------------------
