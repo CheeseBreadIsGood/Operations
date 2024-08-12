@@ -8,7 +8,7 @@
     This will change login type and restart for QuickBooks Services and move junk files out of normal startup. 
   
   .NOTES
-    Version:        1.5 Modify Date 8/6/24 
+    Version:        1.5 Modify Date 8/12/24 
     Author:         Mike Ryan   
     Creation Date:  08/10/21 update 080124
     Purpose/Change: To run this right after a QuickBook install. This will do many things
