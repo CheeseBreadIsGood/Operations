@@ -79,4 +79,4 @@ sc.exe failure $serviceName reset= 86400 actions= restart/60000/restart/400000/r
 Invoke-CimMethod -InputObject $service -MethodName Change -Arguments @{StartName="LocalSystem"}
 
 # Restart the service to apply changes
-Restart-Service -Name $serviceName
+#Restart-Service -Name $serviceName
