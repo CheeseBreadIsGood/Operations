@@ -50,16 +50,33 @@ $Subfolders | ForEach-Object {
 }
 
 
-
-
 ##----------------------------------CheckQB services Status------------------------------------
 $list = get-service QuickBooks* #Get all QBDB services into an array
 $lastQBService = $list[$list.count -1]  #We only want the latest version of QBDB. ignore others
 If ($lastQBService.StartType -ne "Automatic" ) #if it is not set to Automatic start up, set it
     {
-    set-Service -name $lastQBService.DisplayName -startuptype Automatic
+    set-Service -name $lastQBService.DisplayName -startuptype Automatic 
+    
     }
 If ($lastQBService.status -ne "Running" ) #if it is not running, Run it.
     {
     Start-Service -name $lastQBService.DisplayName 
     }
+
+ <# 
+  .DESCRIPTION
+   Setup QB services so they restart after failure and "Automatic" and "Localsystem" to run under
+#>
+# Define the service name
+$serviceName = $lastQBService.DisplayName
+
+sc.exe failure $serviceName reset= 86400 actions= restart/60000/restart/400000/restart/800000 ## Note related to QucikBooks but better health of server restarts
+
+# Get the service object using CIM
+##$service = Get-CimInstance -ClassName Win32_Service -Filter "Name='$serviceName'"
+
+# Change the service to run as LocalSystem
+Invoke-CimMethod -InputObject $service -MethodName Change -Arguments @{StartName="LocalSystem"}
+
+# Restart the service to apply changes
+Restart-Service -Name $serviceName
