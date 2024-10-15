@@ -35,8 +35,6 @@ function Set-RebootRunSched { #-------------------------------------------------
    $TaskPrincipal=New-ScheduledTaskPrincipal -User system -RunLevel Highest -LogonType ServiceAccount
 
    Register-ScheduledTask -TaskName RunonceAfterReboot -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "Run after reboot" -TaskPath "Noobeh"
-
-
 }
 function Disable-InternetExplorerESC {   #---------------------------------------------------------------------
   # This needs to be turn off so you can sign into Azure
@@ -365,7 +363,7 @@ Function Set-PreDomainWork{  #--------------------------------------------------
                          Set-PowerShellUp
                          Set-CopyNoobehFiles  #Have admin log in and start copying IT files to C: drive
                          Set-DATAHarddrive #setup attached F: drive                      
-                         #Set-RebootRunSched  #after first run set it to run once after reboot
+                         Set-RebootRunSched  #after first run set it to run once after reboot
                          Set-TaskLog -LogName PreLog #make sure these functions don't run again
                          Set-DomainController  ##now make domain controller  and reboot
                         }
