@@ -29,10 +29,10 @@ function Set-RebootRunSched { #-------------------------------------------------
     ## Create folder
    New-ScheduledTaskFolder Noobeh #call the function to create subfolder Noobeh in tasks
    #Set 
-   $Action=new-scheduledtaskaction -execute Powershell.exe -Argument C:\NoobehIT\ServerSetup\AdminScripts\VMconfigureMain.ps1
-   $Trigger=new-scheduledtasktrigger -AtStartup
+   $Action= New-scheduledtaskaction -execute Powershell.exe -Argument C:\NoobehIT\ServerSetup\AdminScripts\VMconfigureMain.ps1
+   $Trigger= New-scheduledtasktrigger -AtStartup
    
-   $TaskPrincipal=New-ScheduledTaskPrincipal -User system -RunLevel Highest -LogonType S4U
+   $TaskPrincipal=New-ScheduledTaskPrincipal -User system -RunLevel Highest -LogonType ServiceAccount
 
    Register-ScheduledTask -TaskName RunonceAfterReboot -Trigger $Trigger -Action $Action -Principal $TaskPrincipal -Description "Run after reboot" -TaskPath "Noobeh"
 
